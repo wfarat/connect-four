@@ -1,5 +1,5 @@
-""" Biblioteka jest dołączona, więc powinno się dać odpalić skrypt za pomocą komendy
-
+""" Aby odpalić grę należy wykonać następujące komendy:
+    pip install easyAI
     py game.py lub python game.py
 """
 
