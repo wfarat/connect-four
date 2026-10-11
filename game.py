@@ -1,3 +1,8 @@
+""" Biblioteka jest dołączona, więc powinno się dać odpalić skrypt za pomocą komendy
+
+    py game.py lub python game.py
+"""
+
 from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax
 
 class ConnectFour( TwoPlayerGame ):
@@ -14,30 +19,37 @@ class ConnectFour( TwoPlayerGame ):
         self.board[self.empty[move]-1][move] = self.current_player
         self.empty[move] -= 1
     def lose(self):
-        # In easyAI, evaluations happen AFTER the turn has switched.
-        # So we check if the player who JUST moved (opponent_index) won.
         return findRowOfFour(self.board, self.opponent_index)
 
     def is_over(self):
-        # The game is over if the opponent just won, or if the board is full.
         return self.lose() or (self.possible_moves() == [])
     def show(self):
-        print('0 1 2 3 4 5 6')
+        print('0 | 1 | 2 | 3 | 4 | 5 | 6 |')
         for i in range(6):
             for j in range(7):
-                print(self.board[i][j], end=" ")
+                znak = 'X' if self.board[i][j] == 1 else 'O' if self.board[i][j] == 2 else ' '
+                print(znak, end=" | ")
             print()
     def scoring(self):
-        # If lose() is True, it means the opponent just played a winning move.
-        # This is a terrible state for the current player, so return -100.
         return -100 if self.lose() else 0
 
 def findRowOfFour(board, player):
-    """ Sprawdza czy gracz ma gdzieś cztery pionki w rzędzie """
+    """ Sprawdza czy gracz ma gdzieś cztery pionki w rzędzie
+
+    Args:
+        board(int[]): aktualna plansza gry
+        player(int): sprawdzany gracz
+    Returns:
+        Boolean True jeśli są 4 w rzędzie """
+
+    # pionki pod rząd pionowo dla każdej kolumny
     scoresInCol = [0 for i in range(7)]
+    # pionki pod rząd w skosie od lewej
     scoresInDiagonal = [[0 for i in range(7)] for j in range(6)]
+    # pionki pod rząd w skosie od prawej
     scoresInReverse = [[0 for i in range(7)] for j in range(6)]
     for i in range(6):
+        # pionki pod rząd pionowo
         score = 0
         for j in range(7):
             if board[i][j] == player:
@@ -63,7 +75,7 @@ def findRowOfFour(board, player):
 
 if __name__ == '__main__':
 
-    ai_algo_neg = Negamax(61)
+    ai_algo_neg = Negamax(6)
     game = ConnectFour([AI_Player(ai_algo_neg), Human_Player()])
     game.play()
     if game.lose():
