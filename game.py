@@ -1,11 +1,13 @@
-""" Aby odpalić grę należy wykonać następujące komendy:
+""" Autorzy: Grzegorz Piórek, Władysław Farat
+    Aby odpalić grę należy wykonać następujące komendy:
     pip install easyAI
     py game.py lub python game.py
 """
 
 from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax
 
-class ConnectFour( TwoPlayerGame ):
+
+class ConnectFour(TwoPlayerGame):
     """ Connect four.
      https://en.wikipedia.org/wiki/Connect_Four """
 
@@ -14,24 +16,49 @@ class ConnectFour( TwoPlayerGame ):
         self.board = [[0 for i in range(7)] for j in range(6)]
         self.empty = [6 for i in range(7)]
         self.current_player = 1
-    def possible_moves(self): return [i for i in range(7) if self.empty[i] != 0]
-    def make_move(self,move):
-        self.board[self.empty[move]-1][move] = self.current_player
+
+    def possible_moves(self):
+        """
+        Zwraca numery kolumn w których wciąż jest miejsce
+
+        :return: Tablica liczb od 0 do 6, w której liczby odpowiadają kolumnom z pustymi miejscami
+        """
+        return [i for i in range(7) if self.empty[i] != 0]
+
+    def make_move(self, move):
+        """
+        Zaznacza ruch gracza na planszy, zaczynamy od ostatnich indexów, bo łatwiej się rysuje plansze :D
+
+        :param move: liczba odpowiadająca kolumnie do której gracz wrzuca pionka
+        """
+        self.board[self.empty[move] - 1][move] = self.current_player
         self.empty[move] -= 1
+
     def lose(self):
+        """
+        Sprawdza czy obecny gracz przegrał grę.
+
+        :return: True jeśli przeciwnik wygrał grę po ostatnim ruchu
+        """
         return findRowOfFour(self.board, self.opponent_index)
 
     def is_over(self):
         return self.lose() or (self.possible_moves() == [])
+
     def show(self):
+        """
+        Rysuje plaszne w konsoli
+        """
         print('0 | 1 | 2 | 3 | 4 | 5 | 6 |')
         for i in range(6):
             for j in range(7):
                 znak = 'X' if self.board[i][j] == 1 else 'O' if self.board[i][j] == 2 else ' '
                 print(znak, end=" | ")
             print()
+
     def scoring(self):
         return -100 if self.lose() else 0
+
 
 def findRowOfFour(board, player):
     """ Sprawdza czy gracz ma gdzieś cztery pionki w rzędzie
@@ -72,6 +99,7 @@ def findRowOfFour(board, player):
                 scoresInCol[j] = 0
 
     return False
+
 
 if __name__ == '__main__':
 
