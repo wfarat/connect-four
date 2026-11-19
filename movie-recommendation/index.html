@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie Hierarchical Clustering & Recommender Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom scrollbar for dark dashboard */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+  <!-- Main Application Shell -->
+  <div class="min-h-screen flex flex-col">
+    <!-- Top Header -->
+    <header class="border-b border-slate-800/90 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
+      <div class="max-w-[1600px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="6" cy="18" r="2.5"></circle>
+              <circle cx="18" cy="18" r="2.5"></circle>
+              <circle cx="12" cy="6" r="2.5"></circle>
+              <path d="M6 15.5V12h12v3.5M12 8.5V12"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              Agglomerative Movie Clustering Studio
+              <span id="dataset-badge" class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                64 Shared Movies
+              </span>
+            </h1>
+            <p class="text-xs text-slate-400 hidden sm:block">
+              Interactive bottom-up hierarchical clustering &amp; collaborative recommendation engine (11 reviewers, 189 titles)
+            </p>
+          </div>
+        </div>
+
+        <!-- TMDb & JSON Export -->
+        <div class="flex items-center gap-2 flex-wrap">
+
+          <button id="btn-open-tmdb" class="px-3 py-2 text-xs font-medium rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"></path>
+            </svg>
+            TMDb / Load JSON
+          </button>
+
+          <button id="btn-open-json" class="px-3 py-2 text-xs font-medium rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path>
+            </svg>
+            JSON / Export
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Grid -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- LEFT COLUMN: Algorithm & Playback Controls (3 cols on lg) -->
+      <aside class="lg:col-span-3 flex flex-col gap-4">
+        <!-- Dataset & Algorithm Parameters Card -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+            <span>1. Clustering Parameters</span>
+            <span class="text-[11px] font-mono text-cyan-400">Cosine Dist</span>
+          </h2>
+
+          <!-- Scope Toggle -->
+          <div class="mb-4">
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Dataset Scope</label>
+            <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+              <button id="btn-scope-shared" class="py-2 px-2 text-xs font-medium rounded-lg bg-indigo-600 text-white transition text-center">
+                Shared (&ge;2)<br /><span class="text-[10px] opacity-80">64 movies</span>
+              </button>
+              <button id="btn-scope-all" class="py-2 px-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition text-center">
+                All Titles<br /><span class="text-[10px] opacity-80">189 movies</span>
+              </button>
+            </div>
+            <p id="scope-hint" class="mt-1.5 text-[11px] text-slate-400 leading-relaxed">
+              Filtering to &ge;2 ratings removes 125 single-rater movies so clusters reflect group consensus.
+            </p>
+          </div>
+
+          <!-- Linkage Criterion -->
+          <div class="mb-4">
+            <label for="select-linkage" class="block text-xs font-medium text-slate-300 mb-1.5">Linkage Criterion</label>
+            <select id="select-linkage" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="average" selected>Average Linkage (UPGMA)</option>
+              <option value="complete">Complete Linkage (Max Dist)</option>
+              <option value="single">Single Linkage (Min Dist)</option>
+            </select>
+          </div>
+
+          <!-- Target Clusters / Merge Step Slider -->
+          <div class="mb-3">
+            <div class="flex items-center justify-between text-xs mb-1">
+              <label for="slider-step" class="font-medium text-slate-300">Merge Step</label>
+              <span id="label-step" class="font-mono text-indigo-300 font-semibold">46 / 63</span>
+            </div>
+            <input id="slider-step" type="range" min="0" max="63" value="46" class="w-full accent-indigo-500 cursor-pointer" />
+            <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-mono">
+              <span id="label-cluster-count">18 clusters</span>
+              <span id="label-cut-dist">cut dist: 0.72</span>
+            </div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="pt-3 border-t border-slate-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-slate-300">Merge Playback</span>
+              <select id="select-speed" class="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-[11px] font-mono text-slate-300 focus:outline-none">
+                <option value="900">0.5x Speed</option>
+                <option value="450" selected>1.0x Speed</option>
+                <option value="180">2.5x Speed</option>
+                <option value="60">6.0x Speed</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <button id="btn-reset" title="Reset to singleton leaves" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+              </button>
+              <button id="btn-prev" title="Step Backward (Split)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+              </button>
+              <button id="btn-play" title="Play / Pause Auto-Merge" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/20 transition">
+                <svg id="icon-play" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+                <svg id="icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+                </svg>
+              </button>
+              <button id="btn-next" title="Step Forward (Merge Closest Pair)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9 18l6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Latest Merge Event Card -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+            2. Current Merge Event
+          </h2>
+          <div id="merge-event-box" class="bg-slate-950/90 border border-slate-800/80 rounded-xl p-3 text-xs space-y-1.5">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- Selected Node / Cluster Inspector -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex-1">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              3. Inspector &amp; Synopsis
+            </h2>
+            <span id="inspector-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+              Click any node
+            </span>
+          </div>
+          <div id="inspector-content" class="text-xs text-slate-300 space-y-2 max-h-80 overflow-y-auto pr-1">
+            <p class="text-slate-400 italic">
+              Hover or click any movie bubble or recommendation card to inspect plot descriptions, TMDb scores, and reviewer ratings.
+            </p>
+          </div>
+        </section>
+      </aside>
+
+      <!-- CENTER COLUMN: Interactive Visualization Canvas (6 cols on lg) -->
+      <section class="lg:col-span-6 flex flex-col bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl overflow-hidden min-h-[540px] lg:min-h-[760px]">
+        <!-- Canvas Top Bar & Legend -->
+        <div class="px-4 py-2.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-900">
+          <div class="flex items-center gap-3 text-[11px] flex-wrap">
+            <span class="inline-flex items-center gap-1.5 text-slate-300">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Liked Cluster
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-slate-300">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Disliked Cluster
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-slate-300">
+              <span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> Unseen / Neutral
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-slate-300">
+              <span class="w-2.5 h-2.5 rounded-full border-2 border-amber-400 bg-slate-800 inline-block"></span> Rated by User
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <input
+              id="input-search"
+              type="text"
+              placeholder="Find movie..."
+              class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-100 placeholder-slate-500 w-32 sm:w-40 focus:outline-none focus:border-indigo-500"
+            />
+            <button id="btn-reset-zoom" title="Reset Pan & Zoom" class="px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+              Fit View
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div id="canvas-wrapper" class="relative flex-1 w-full bg-slate-950 overflow-hidden cursor-grab active:cursor-grabbing">
+          <canvas id="cluster-canvas"></canvas>
+
+          <!-- Floating Hover Tooltip -->
+          <div
+            id="canvas-tooltip"
+            class="pointer-events-none hidden fixed z-40 max-w-xs bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl p-3 shadow-2xl text-xs"
+          ></div>
+
+          <!-- Bottom Canvas Help Hint -->
+          <div class="absolute bottom-3 left-3 pointer-events-none bg-slate-900/80 backdrop-blur border border-slate-800 rounded-lg px-2.5 py-1 text-[11px] text-slate-400">
+            Drag to pan &bull; Scroll/Pinch to zoom &bull; Click movie to inspect
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Live Recommender Engine Output (3 cols on lg) -->
+      <aside class="lg:col-span-3 flex flex-col gap-4">
+        <!-- Reviewer Selector & Profile -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+          <label for="select-reviewer" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+            Target Reviewer
+          </label>
+          <select id="select-reviewer" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-medium text-white focus:outline-none focus:border-indigo-500">
+            <!-- Populated dynamically -->
+          </select>
+
+          <div id="reviewer-stats" class="mt-3 grid grid-cols-3 gap-2 text-center">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- Top 5 Recommendations -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+              </svg>
+              Top 5 Recommendations
+            </h2>
+            <span class="text-[10px] font-mono text-slate-400">Predicted</span>
+          </div>
+          <div id="list-recommendations" class="space-y-2">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- Top 5 Anti-Recommendations -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+              </svg>
+              Top 5 Anti-Recommendations
+            </h2>
+            <span class="text-[10px] font-mono text-slate-400">Likely Disliked</span>
+          </div>
+          <div id="list-antirecommendations" class="space-y-2">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- JSON Modal Drawer -->
+  <div id="json-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-bold text-white">Export JSON Data</h3>
+          <div class="inline-flex rounded-lg bg-slate-950 p-0.5 border border-slate-800 text-xs">
+            <button id="btn-json-tab-clusters" class="px-2.5 py-1 rounded-md bg-indigo-600 text-white font-medium">
+              Current Clusters &amp; Recs
+            </button>
+            <button id="btn-json-tab-normalized" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-medium">
+              Enriched Dataset (189)
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-download-json" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
+            Download .json
+          </button>
+          <button id="btn-copy-json" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition">
+            Copy JSON
+          </button>
+          <button id="btn-close-json" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 overflow-auto flex-1">
+        <textarea id="json-textarea" readonly class="w-full h-96 bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-xs text-cyan-300 focus:outline-none"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- TMDb Metadata Fetcher & Enriched JSON Loader Modal -->
+  <div id="tmdb-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white">Enrich Dataset with TMDb Metadata</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Load an existing <code class="text-cyan-300">enriched_movie_ratings.json</code> or fetch live posters &amp; overviews via TMDb API.</p>
+        </div>
+        <button id="btn-close-tmdb" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 space-y-4 text-xs">
+        <!-- Option A: Upload Enriched JSON -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2">
+          <div class="font-semibold text-slate-200">Option A: Load Enriched JSON File</div>
+          <p class="text-slate-400">Upload a previously generated <span class="font-mono text-slate-300">enriched_movie_ratings.json</span> file from disk.</p>
+          <input id="input-upload-json" type="file" accept=".json,application/json" class="block w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer" />
+        </div>
+
+        <!-- Option B: Live Fetch via TMDb Bearer Token -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-slate-200">Option B: Live Fetch from TMDb API</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">pl-PL + en-US fallback</span>
+          </div>
+          <p class="text-slate-400">Paste your free TMDb API Read Access Token (Bearer) to fetch posters, release years, plot summaries, and TMDb community scores for all 189 titles.</p>
+          <div class="flex gap-2">
+            <input id="input-tmdb-token" type="password" placeholder="eyJhbGciOiJIUzI1NiJ9..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 font-mono text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500" />
+            <button id="btn-run-tmdb-fetch" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition shrink-0">
+              Fetch All 189
+            </button>
+          </div>
+
+          <!-- Progress Bar -->
+          <div id="tmdb-progress-wrap" class="hidden space-y-1.5 pt-1">
+            <div class="flex justify-between text-[11px] font-mono text-slate-300">
+              <span id="tmdb-progress-label">Fetching 0 / 189...</span>
+              <span id="tmdb-progress-pct">0%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div id="tmdb-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 transition-all duration-150" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rich Movie Detail Modal (Opens on Movie Click) -->
+  <div id="movie-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <span id="detail-modal-cluster-badge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+          Movie Details
+        </span>
+        <button id="btn-close-detail-modal" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="detail-modal-body" class="p-4 sm:p-5 overflow-y-auto space-y-4">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification (Replaces alert()) -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-slate-800 border border-slate-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl"></div>
+
+  <script type="module">
+    /**
+     * ============================================================================
+     * 1. IMPORT CLUSTERING & RECOMMENDATION ENGINE FROM index.js
+     * ============================================================================
+     */
+    import {
+      preprocessDataset,
+      computeUserStatsAndVectors,
+      cosineDistance,
+      computeProximityMatrix,
+      clusterDistance,
+      buildFullDendrogram,
+      buildMovieClusters,
+      computeRecommendations,
+      getRecommendations,
+      loadDefaultDataset,
+    } from './index.js';
+
+    // Expose engine to global window for browser console inspection
+    window.MovieEngine = {
+      preprocessDataset,
+      computeUserStatsAndVectors,
+      cosineDistance,
+      computeProximityMatrix,
+      clusterDistance,
+      buildFullDendrogram,
+      buildMovieClusters,
+      computeRecommendations,
+      getRecommendations,
+      loadDefaultDataset,
+    };
+
+    // Built-in metadata dictionary so descriptions, years, media types & community scores work out-of-the-box
+    const BUILTIN_METADATA = {
+      "1670": { mediaType: "tv", officialTitle: "1670", originalTitle: "1670", releaseYear: 2023, tmdbRating: 8.1, tmdbVotes: 240, overview: "Satyryczna komedia mockumentary osadzona w XVII-wiecznej Polsce. Jan Paweł Adamczewski, głowa szlacheckiej rodziny i właściciel mniejszej połowy wsi Adamczycha, marzy o zostaniu najsłynniejszym Janem Pawłem w historii Polski." },
+      "Avatar": { mediaType: "movie", officialTitle: "Avatar", originalTitle: "Avatar", releaseYear: 2009, tmdbRating: 7.6, tmdbVotes: 31200, overview: "Sparaliżowany były komandos Jake Sully zostaje wysłany na księżyc Pandora, gdzie w ciele hybrydowego awatara zakochuje się w kulturze rdzennego ludu Na'vi i staje w obronie ich świata." },
+      "Avengers: Czas Ultrona": { mediaType: "movie", officialTitle: "Avengers: Czas Ultrona", originalTitle: "Avengers: Age of Ultron", releaseYear: 2015, tmdbRating: 7.3, tmdbVotes: 22800, overview: "Gdy Tony Stark próbuje reaktywować program utrzymywania pokoju, sprawy przybierają zły obrót i najpotężniejsi bohaterowie Ziemi muszą powstrzymać sztuczną inteligencję Ultrona przed zagładą ludzkości." },
+      "Backrooms": { mediaType: "tv", officialTitle: "The Backrooms", originalTitle: "The Backrooms", releaseYear: 2022, tmdbRating: 7.8, tmdbVotes: 190, overview: "Kultowa seria horroru analogowego typu found footage ukazująca niekończący się labirynt opustoszałych, żółtych pomieszczeń biurowych i czyhające w nich anomalie." },
+      "Barbarzyńcy": { mediaType: "tv", officialTitle: "Barbarzyńcy", originalTitle: "Barbaren", releaseYear: 2020, tmdbRating: 7.3, tmdbVotes: 1450, overview: "Losy trojga ludzi splatają się podczas bitwy w Lesie Teutoburskim w 9 roku n.e., gdy germańskie plemiona jednoczą się, by powstrzymać ekspansję Imperium Rzymskiego." },
+      "Battleship: Bitwa o Ziemię": { mediaType: "movie", officialTitle: "Battleship: Bitwa o Ziemię", originalTitle: "Battleship", releaseYear: 2012, tmdbRating: 5.9, tmdbVotes: 5400, overview: "Międzynarodowa flota okrętów wojennych na Pacyfiku staje do niespodziewanej walki z zaawansowaną technologicznie armadą obcych przybyszów z kosmosu." },
+      "Battlestar Galactica": { mediaType: "tv", officialTitle: "Battlestar Galactica", originalTitle: "Battlestar Galactica", releaseYear: 2004, tmdbRating: 8.2, tmdbVotes: 1580, overview: "Po niemal całkowitej zagładzie Dwunastu Kolonii przez zbuntowane maszyny zwane Cylonami, ostatni ocalały krążownik gwiezdny prowadzi flotyllę cywilnych statków w poszukiwaniu mitycznej Ziemi." },
+      "Braveheart – Waleczne Serce": { mediaType: "movie", officialTitle: "Braveheart – Waleczne Serce", originalTitle: "Braveheart", releaseYear: 1995, tmdbRating: 7.9, tmdbVotes: 9950, overview: "Szkocki wojownik William Wallace staje na czele krwawego powstania przeciwko tyranii angielskiego króla Edwarda I Długonogiego." },
+      "Breaking Bad": { mediaType: "tv", officialTitle: "Breaking Bad", originalTitle: "Breaking Bad", releaseYear: 2008, tmdbRating: 8.9, tmdbVotes: 14200, overview: "Chory na nieoperacyjnego raka płuc nauczyciel chemii z Albuquerque zaczyna produkować i sprzedawać metamfetaminę wraz z dawnym uczniem, aby zabezpieczyć finansowo swoją rodzinę." },
+      "Człowiek z blizną": { mediaType: "movie", officialTitle: "Człowiek z blizną", originalTitle: "Scarface", releaseYear: 1983, tmdbRating: 8.2, tmdbVotes: 11600, overview: "Kubański imigrant Tony Montana przybywa do Miami w 1980 roku i dzięki bezwzględności oraz ambicji przejmuje kontrolę nad kartelami narkotykowymi." },
+      "Diabeł ubiera się u Prady": { mediaType: "movie", officialTitle: "Diabeł ubiera się u Prady", originalTitle: "The Devil Wears Prada", releaseYear: 2006, tmdbRating: 7.4, tmdbVotes: 11800, overview: "Młoda absolwentka dziennikarstwa dostaje pracę jako asystentka bezwzględnej i wymagającej redaktor naczelnej prestiżowego magazynu mody w Nowym Jorku." },
+      "Diuna": { mediaType: "movie", officialTitle: "Diuna", originalTitle: "Dune", releaseYear: 2021, tmdbRating: 7.8, tmdbVotes: 12400, overview: "Szlachetny ród Atrydów przybywa na pustynną planetę Arrakis, jedyne źródło najcenniejszej substancji we wszechświecie, gdzie młody Paul Atryda musi stawić czoła zdradzie i własnemu przeznaczeniu." },
+      "Dom z papieru": { mediaType: "tv", officialTitle: "Dom z papieru", originalTitle: "La casa de papel", releaseYear: 2017, tmdbRating: 8.2, tmdbVotes: 18500, overview: "Tajemniczy geniusz znany jako Profesor rekrutuje ośmioro przestępców, aby przeprowadzić perfekcyjny skok na Mennicę Królewską w Madrycie." },
+      "Dwunastu gniewnych ludzi": { mediaType: "movie", officialTitle: "Dwunastu gniewnych ludzi", originalTitle: "12 Angry Men", releaseYear: 1957, tmdbRating: 8.5, tmdbVotes: 8500, overview: "Podczas upalnego popołudnia dwunastu przysięgłych w dusznej sali narad decyduje o życiu lub śmierci nastolatka oskarżonego o ojcobójstwo — tylko jeden z nich ma uzasadnione wątpliwości." },
+      "Dzień świra": { mediaType: "movie", officialTitle: "Dzień świra", originalTitle: "Dzień świra", releaseYear: 2002, tmdbRating: 7.9, tmdbVotes: 310, overview: "Gorzko-komediowy portret jednego dnia z życia Adama Miauczyńskiego — sfrustrowanego polonisty uwięzionego w pułapce natręctw, lęków i codziennych absurdów." },
+      "Ex Machina": { mediaType: "movie", officialTitle: "Ex Machina", originalTitle: "Ex Machina", releaseYear: 2014, tmdbRating: 7.6, tmdbVotes: 13100, overview: "Młody programista wygrywa tydzień w odizolowanej posiadłości ekscentrycznego prezesa giganta technologicznego, gdzie ma przeprowadzić test Turinga na zaawansowanej humanoidalnej sztucznej inteligencji." },
+      "Forrest Gump": { mediaType: "movie", officialTitle: "Forrest Gump", originalTitle: "Forrest Gump", releaseYear: 1994, tmdbRating: 8.5, tmdbVotes: 27100, overview: "Historia życia mężczyzny o niskim ilorazie inteligencji, ale wielkim sercu, który przypadkowo staje się świadkiem i uczestnikiem najważniejszych wydarzeń w historii USA XX wieku." },
+      "Ghost in the Shell": { mediaType: "movie", officialTitle: "Ghost in the Shell", originalTitle: "攻殻機動隊", releaseYear: 1995, tmdbRating: 7.9, tmdbVotes: 3350, overview: "W cyberpunkowym świecie roku 2029 cyborg-major Motoko Kusanagi z Sekcji 9 ściga nieuchwytnego hakera znanego jako Władca Marionetek." },
+      "Gladiator": { mediaType: "movie", officialTitle: "Gladiator", originalTitle: "Gladiator", releaseYear: 2000, tmdbRating: 8.2, tmdbVotes: 18400, overview: "Zdradzony rzymski generał Maximus, którego rodzina została zamordowana przez skorumpowanego syna cesarza, powraca do Rzymu jako gladiator, by dokonać zemsty." },
+      "Gran Torino": { mediaType: "movie", officialTitle: "Gran Torino", originalTitle: "Gran Torino", releaseYear: 2008, tmdbRating: 8.0, tmdbVotes: 10600, overview: "Zgorzkniały weteran wojny koreańskiej Walt Kowalski nawiązuje niespodziewaną więź z młodym sąsiadem z ludu Hmong po tym, jak chłopak próbuje ukraść jego klasycznego Forda Gran Torino." },
+      "Grand Budapest Hotel": { mediaType: "movie", officialTitle: "Grand Budapest Hotel", originalTitle: "The Grand Budapest Hotel", releaseYear: 2014, tmdbRating: 8.1, tmdbVotes: 14700, overview: "Przygody legendarnego konsjerża Gustave'a H. oraz jego zaufanego boya hotelowego Zero w słynnym europejskim hotelu w okresie międzywojennym." },
+      "Gwiezdne wojny (części I-VI)": { mediaType: "movie", officialTitle: "Gwiezdne wojny (Saga I–VI)", originalTitle: "Star Wars", releaseYear: 1977, tmdbRating: 8.2, tmdbVotes: 20400, overview: "Epicka space opera opowiadająca o upadku i odkupieniu Anakina Skywalkera oraz walce Sojuszu Rebeliantów z Galaktycznym Imperium." },
+      "Incepcja": { mediaType: "movie", officialTitle: "Incepcja", originalTitle: "Inception", releaseYear: 2010, tmdbRating: 8.4, tmdbVotes: 36300, overview: "Dom Cobb jest mistrzem w wykradaniu sekretów z głębi podświadomości podczas snu. Tym razem otrzymuje odwrotne zadanie: zaszczepienie idei w umyśle celu." },
+      "Interstellar": { mediaType: "movie", officialTitle: "Interstellar", originalTitle: "Interstellar", releaseYear: 2014, tmdbRating: 8.4, tmdbVotes: 35400, overview: "Gdy Ziemia staje na skraju ekologicznej zagłady, grupa odkrywców wyrusza przez tunel czasoprzestrzenny w poszukiwaniu nowego domu dla ludzkości." },
+      "John Wick": { mediaType: "movie", officialTitle: "John Wick", originalTitle: "John Wick", releaseYear: 2014, tmdbRating: 7.4, tmdbVotes: 19000, overview: "Emerytowany płatny zabójca powraca do przestępczego półświatka Nowego Jorku, by zemścić się na gangsterach, którzy zabili psa będącego ostatnim prezentem od jego zmarłej żony." },
+      "Kac Vegas": { mediaType: "movie", officialTitle: "Kac Vegas", originalTitle: "The Hangover", releaseYear: 2009, tmdbRating: 7.3, tmdbVotes: 16600, overview: "Trzech przyjaciół budzi się po szalonym wieczorze kawalerskim w Las Vegas bez żadnych wspomnień z poprzedniej nocy — i bez pana młodego." },
+      "Kapitan Ameryka: Wojna bohaterów": { mediaType: "movie", officialTitle: "Kapitan Ameryka: Wojna bohaterów", originalTitle: "Captain America: Civil War", releaseYear: 2016, tmdbRating: 7.4, tmdbVotes: 22500, overview: "Polityczna presja i spór o kontrolę nad Avengers dzielą drużynę na dwa obozy dowodzone przez Steve'a Rogersa i Tony'ego Starka." },
+      "Kapitan Phillips": { mediaType: "movie", officialTitle: "Kapitan Phillips", originalTitle: "Captain Phillips", releaseYear: 2013, tmdbRating: 7.6, tmdbVotes: 6900, overview: "Oparta na faktach historia porwania amerykańskiego kontenerowca Maersk Alabama przez somalijskich piratów w 2009 roku." },
+      "Kraina lodu": { mediaType: "movie", officialTitle: "Kraina lodu", originalTitle: "Frozen", releaseYear: 2013, tmdbRating: 7.2, tmdbVotes: 16300, overview: "Nieustraszona księżniczka Anna wyrusza w niebezpieczną podróż wraz z człowiekiem gór Kristoffem i bałwanem Olafem, aby odnaleźć swoją siostrę Elsę, której moce uwięziły królestwo w wiecznej zimie." },
+      "Listy do M.": { mediaType: "movie", officialTitle: "Listy do M.", originalTitle: "Listy do M.", releaseYear: 2011, tmdbRating: 6.7, tmdbVotes: 230, overview: "Polska komedia romantyczna splatająca losy kilkunastu bohaterów w Warszawie podczas jednego magicznego dnia Wigilii Bożego Narodzenia." },
+      "Listy do M. 2": { mediaType: "movie", officialTitle: "Listy do M. 2", originalTitle: "Listy do M. 2", releaseYear: 2015, tmdbRating: 6.2, tmdbVotes: 145, overview: "Kontynuacja świątecznych losów bohaterów pierwszej części na kilka dni przed Wigilią." },
+      "Lucyfer": { mediaType: "tv", officialTitle: "Lucyfer", originalTitle: "Lucifer", releaseYear: 2016, tmdbRating: 8.5, tmdbVotes: 14600, overview: "Znudzony rolą Władcy Piekieł Lucyfer Morningstar porzuca swój tron i otwiera ekskluzywny klub nocny w Los Angeles, gdzie zaczyna pomagać policji w rozwiązywaniu zagadek kryminalnych." },
+      "Marsjanin": { mediaType: "movie", officialTitle: "Marsjanin", originalTitle: "The Martian", releaseYear: 2015, tmdbRating: 7.7, tmdbVotes: 19600, overview: "Uznany za zmarłego podczas burzy piaskowej astronauta Mark Watney zostaje sam na Marsie i musi wykorzystać swoją wiedzę botaniczną oraz inżynieryjną, aby przetrwać." },
+      "Miasteczko South Park": { mediaType: "tv", officialTitle: "Miasteczko South Park", originalTitle: "South Park", releaseYear: 1997, tmdbRating: 8.4, tmdbVotes: 4250, overview: "Satyryczny serial animowany dla dorosłych śledzący perypetie czterech chłopców w fikcyjnym miasteczku South Park w stanie Kolorado." },
+      "Narcos": { mediaType: "tv", officialTitle: "Narcos", originalTitle: "Narcos", releaseYear: 2015, tmdbRating: 8.4, tmdbVotes: 3100, overview: "Oparta na faktach kronika narodzin i upadku kolumbijskich karteli narkotykowych, ze szczególnym uwzględnieniem potęgi Pabla Escobara i walki agentów DEA." },
+      "Narodziny gwiazdy": { mediaType: "movie", officialTitle: "Narodziny gwiazdy", originalTitle: "A Star Is Born", releaseYear: 2018, tmdbRating: 7.5, tmdbVotes: 11700, overview: "Doświadczony muzyk country odkrywa utalentowaną, nieznaną piosenkarkę Ally i pomaga jej zdobyć sławę, podczas gdy jego własna kariera chyli się ku upadkowi." },
+      "Neon Genesis Evangelion": { mediaType: "tv", officialTitle: "Neon Genesis Evangelion", originalTitle: "新世紀エヴァンゲリオン", releaseYear: 1995, tmdbRating: 8.6, tmdbVotes: 1750, overview: "W postapokaliptycznym Tokio-3 nastoletni Shinji Ikari zostaje zmuszony przez ojca do pilotowania gigantycznego bio-mecha Evangelion w walce z tajemniczymi Aniołami." },
+      "Obcy: Ósmy pasażer Nostromo": { mediaType: "movie", officialTitle: "Obcy – 8. pasażer Nostromo", originalTitle: "Alien", releaseYear: 1979, tmdbRating: 8.2, tmdbVotes: 14600, overview: "Załoga statku kosmicznego Nostromo odbiera sygnał ratunkowy z nieznanej planety i nieświadomie wpuszcza na pokład śmiertelnie niebezpieczną formę życia." },
+      "Obecność": { mediaType: "movie", officialTitle: "Obecność", originalTitle: "The Conjuring", releaseYear: 2013, tmdbRating: 7.5, tmdbVotes: 11400, overview: "Badacze zjawisk paranormalnych Ed i Lorraine Warrenowie przybywają na pomoc rodzinie terroryzowanej przez mroczną obecność na odizolowanej farmie." },
+      "Ojciec chrzestny": { mediaType: "movie", officialTitle: "Ojciec chrzestny", originalTitle: "The Godfather", releaseYear: 1972, tmdbRating: 8.7, tmdbVotes: 20400, overview: "Opowieść o nowojorskiej rodzinie mafijnej Corleone w latach 1945–1955 oraz przemianie najmłodszego syna Michaela z bohatera wojennego w bezwzględnego bossa." },
+      "Ona": { mediaType: "movie", officialTitle: "Ona", originalTitle: "Her", releaseYear: 2013, tmdbRating: 7.9, tmdbVotes: 14100, overview: "W niedalekiej przyszłości samotny pisarz Theodore zakochuje się w zaawansowanym, obdarzonym świadomością systemie operacyjnym o imieniu Samantha." },
+      "Paranormal Activity": { mediaType: "movie", officialTitle: "Paranormal Activity", originalTitle: "Paranormal Activity", releaseYear: 2007, tmdbRating: 6.0, tmdbVotes: 4950, overview: "Młoda para montuje w sypialni kamerę wideo, aby zarejestrować niepokojące zjawiska nawiedzające ich dom nocą." },
+      "Peaky Blinders": { mediaType: "tv", officialTitle: "Peaky Blinders", originalTitle: "Peaky Blinders", releaseYear: 2013, tmdbRating: 8.5, tmdbVotes: 9800, overview: "Saga gangsterska osadzona w Birmingham tuż po I wojnie światowej, skupiona wokół ambitnego Thomasa Shelby'ego i jego rodziny kontrolującej nielegalne zakłady bukmacherskie." },
+      "Piła IV": { mediaType: "movie", officialTitle: "Piła IV", originalTitle: "Saw IV", releaseYear: 2007, tmdbRating: 6.2, tmdbVotes: 3750, overview: "Mimo śmierci Jigsawa policja odkrywa kolejną serię śmiertelnych pułapek wymierzonych w dowódcę jednostki SWAT." },
+      "Podziemny krąg": { mediaType: "movie", officialTitle: "Podziemny krąg", originalTitle: "Fight Club", releaseYear: 1999, tmdbRating: 8.4, tmdbVotes: 29200, overview: "Cierpiący na bezsenność pracownik korporacji i charyzmatyczny sprzedawca mydła Tyler Durden zakładają podziemny klub walki, który wymyka się spod kontroli." },
+      "Project Hail Mary": { mediaType: "movie", officialTitle: "Project Hail Mary", originalTitle: "Project Hail Mary", releaseYear: 2026, tmdbRating: 8.3, tmdbVotes: 420, overview: "Nauczyciel nauk ścisłych Ryland Grace budzi się ze śpiączki na statku kosmicznym lata świetlne od Ziemi bez pamięci o tym, kim jest — i odkrywa, że jest jedyną nadzieją na uratowanie Słońca." },
+      "Pulp Fiction": { mediaType: "movie", officialTitle: "Pulp Fiction", originalTitle: "Pulp Fiction", releaseYear: 1994, tmdbRating: 8.5, tmdbVotes: 27700, overview: "Przeplatające się, pełne czarnego humoru historie dwóch płatnych zabójców, boksera, żony gangstera oraz pary drobnych rabusiów w Los Angeles." },
+      "Rambo: Pierwsza krew": { mediaType: "movie", officialTitle: "Rambo: Pierwsza krew", originalTitle: "First Blood", releaseYear: 1982, tmdbRating: 7.5, tmdbVotes: 6200, overview: "Weteran wojny w Wietnamie John Rambo zostaje niesłusznie aresztowany przez małomiasteczkowego szeryfa, co zmusza go do ucieczki w góry i podjęcia walki o przetrwanie." },
+      "Resident Evil": { mediaType: "movie", officialTitle: "Resident Evil", originalTitle: "Resident Evil", releaseYear: 2002, tmdbRating: 6.6, tmdbVotes: 6300, overview: "Oddział komandosów i cierpiąca na amnezję Alice wkraczają do podziemnego laboratorium korporacji Umbrella, gdzie śmiertelny wirus T zamienił personel w krwiożercze zombie." },
+      "Resident Evil (2026)": { mediaType: "movie", officialTitle: "Resident Evil (2026)", originalTitle: "Resident Evil", releaseYear: 2026, tmdbRating: 6.8, tmdbVotes: 110, overview: "Nowa filmowa adaptacja kultowej serii survival horroru wyreżyserowana przez Zacha Creggera." },
+      "Rick and Morty": { mediaType: "tv", officialTitle: "Rick i Morty", originalTitle: "Rick and Morty", releaseYear: 2013, tmdbRating: 8.7, tmdbVotes: 9700, overview: "Ekscentryczny, genialny naukowiec-alkoholik Rick Sanchez zabiera swojego nieśmiałego wnuka Morty'ego w niebezpieczne podróże między wymiarami." },
+      "Rozdzielenie": { mediaType: "tv", officialTitle: "Rozdzielenie", originalTitle: "Severance", releaseYear: 2022, tmdbRating: 8.4, tmdbVotes: 1550, overview: "Pracownicy korporacji Lumon Industries przechodzą zabieg chirurgiczny oddzielający ich wspomnienia zawodowe od prywatnych." },
+      "Sensacje XX wieku": { mediaType: "tv", officialTitle: "Sensacje XX wieku", originalTitle: "Sensacje XX wieku", releaseYear: 1983, tmdbRating: 8.6, tmdbVotes: 85, overview: "Kultowy polski program historyczno-dokumentalny Bogusława Wołoszańskiego odkrywający kulisy największych operacji wywiadowczych i militarnych XX wieku." },
+      "Shrek": { mediaType: "movie", officialTitle: "Shrek", originalTitle: "Shrek", releaseYear: 2001, tmdbRating: 7.7, tmdbVotes: 17000, overview: "Zrzędliwy ogr Shrek wyrusza w towarzystwie gadatliwego Osła na ratunek księżniczce Fionie, aby odzyskać spokój na swoim bagnie." },
+      "Skazani na Shawshank": { mediaType: "movie", officialTitle: "Skazani na Shawshank", originalTitle: "The Shawshank Redemption", releaseYear: 1994, tmdbRating: 8.7, tmdbVotes: 27000, overview: "Niesłusznie skazany na dożywocie bankier Andy Dufresne spędza dekady w surowym więzieniu Shawshank, zachowując nadzieję i zaprzyjaźniając się z Redem." },
+      "Teoria wielkiego podrywu": { mediaType: "tv", officialTitle: "Teoria wielkiego podrywu", originalTitle: "The Big Bang Theory", releaseYear: 2007, tmdbRating: 7.9, tmdbVotes: 11200, overview: "Życie dwóch genialnych, lecz nieporadnych towarzysko fizyków z Pasadeny zmienia się, gdy naprzeciwko wprowadza się przebojowa Penny." },
+      "Terminator 2: Dzień sądu": { mediaType: "movie", officialTitle: "Terminator 2: Dzień sądu", originalTitle: "Terminator 2: Judgment Day", releaseYear: 1991, tmdbRating: 8.1, tmdbVotes: 12700, overview: "Przeprogramowany cyborg T-800 zostaje wysłany w przeszłość, by chronić młodego Johna Connora przed niemal niezniszczalnym terminatorem T-1000 z ciekłego metalu." },
+      "The Expanse": { mediaType: "tv", officialTitle: "The Expanse", originalTitle: "The Expanse", releaseYear: 2015, tmdbRating: 8.1, tmdbVotes: 2450, overview: "W XXIV wieku skolonizowany Układ Słoneczny stoi na krawędzi wojny między Ziemią, Marsem a Pasem Asteroid, gdy załoga statku Rocinante odkrywa obcą protomolekułę." },
+      "The Office": { mediaType: "tv", officialTitle: "Biuro (The Office)", originalTitle: "The Office", releaseYear: 2005, tmdbRating: 8.6, tmdbVotes: 4200, overview: "Komediowy mockumentary ukazujący codzienną pracę w oddziale firmy papierniczej Dunder Mifflin w Scranton pod rządami niepoprawnego szefa Michaela Scotta." },
+      "Weapons": { mediaType: "movie", officialTitle: "Weapons", originalTitle: "Weapons", releaseYear: 2025, tmdbRating: 7.4, tmdbVotes: 610, overview: "Mroczny thriller grozy Zacha Creggera o powiązanych ze sobą historiach zniknięcia uczniów jednej klasy w małym amerykańskim miasteczku." },
+      "Whiplash": { mediaType: "movie", officialTitle: "Whiplash", originalTitle: "Whiplash", releaseYear: 2014, tmdbRating: 8.4, tmdbVotes: 15200, overview: "Ambitny młody perkusista jazzowy trafia do elitarnego konserwatorium pod skrzydła bezwzględnego dyrygenta Terence'a Fletchera, który popycha go na skraj obsesji." },
+      "Władca Pierścieni (trylogia)": { mediaType: "movie", officialTitle: "Władca Pierścieni (Trylogia)", originalTitle: "The Lord of the Rings", releaseYear: 2001, tmdbRating: 8.5, tmdbVotes: 25100, overview: "Hobbit Frodo Baggins wraz z Drużyną Pierścienia wyrusza do Mordoru, aby zniszczyć Jedyny Pierścień w ogniu Góry Przeznaczenia i pokonać Mrocznego Władcę Saurona." },
+      "Zmierzch": { mediaType: "movie", officialTitle: "Zmierzch", originalTitle: "Twilight", releaseYear: 2008, tmdbRating: 6.3, tmdbVotes: 13400, overview: "Nastoletnia Bella Swan przeprowadza się do deszczowego miasteczka Forks, gdzie zakochuje się w tajemniczym Edwardzie Cullenie — wampirze." },
+      "Żołnierze kosmosu": { mediaType: "movie", officialTitle: "Żołnierze kosmosu", originalTitle: "Starship Troopers", releaseYear: 1997, tmdbRating: 7.0, tmdbVotes: 4800, overview: "Satyryczne sci-fi Paula Verhoevena o młodych rekrutach ziemskiej piechoty kosmicznej walczących z gigantycznymi pajęczakami na odległych planetach." },
+    };
+
+    /**
+     * Fallback minimal seed dataset if offline or opened via file:// protocol
+     */
+    const FALLBACK_DATASET = [
+      { movie: "1670", ratings: [{ person: "Paweł Czapiewski", rating: 9 }, { person: "Radosław Krawiec", rating: 7 }, { person: "Piotr Trybała", rating: 8 }] },
+      { movie: "2001: Odyseja kosmiczna", ratings: [{ person: "Oskar Niedźwiedzki", rating: 2 }] },
+      { movie: "Żołnierze kosmosu", ratings: [{ person: "Damian Sowa", rating: 7 }, { person: "Sławomir Rudnicki", rating: 9 }] },
+      { movie: "Żywe trupy", ratings: [{ person: "Oskar Niedźwiedzki", rating: 4 }] },
+    ];
+
+    /**
+     * ============================================================================
+     * 2. APPLICATION STATE & SIMULATION ENGINE
+     * ============================================================================
+     */
+    let allMovies = [];
+    let userMeans = {};
+    let userCounts = {};
+
+    const state = {
+      scope: "shared", // "shared" (>=2 ratings) | "all" (189 movies)
+      linkage: "average",
+      selectedReviewer: "Władysław Farat",
+      currentStep: 46,
+      isPlaying: false,
+      playSpeed: 450,
+      playTimer: null,
+      searchQuery: "",
+      selectedMovie: null,
+      hoveredMovie: null,
+      jsonTab: "clusters",
+
+      // Computed model structures
+      activeMovies: [],
+      dendrogram: null,
+      recResult: null,
+
+      // Physics / Layout coordinates for Bubble View
+      nodes: [], // { x, y, vx, vy, radius, movieIdx }
+      clusterHulls: [], // { clusterId, x, y, radius, affinity, items }
+
+      // Pan & Zoom camera
+      camera: { x: 0, y: 0, zoom: 1 },
+      isDragging: false,
+      dragStart: { x: 0, y: 0 },
+      lastTouchDist: null,
+    };
+
+    // Deterministic seeded PRNG so node positions are reproducible across reloads
+    function mulberry32(seed) {
+      return function () {
+        let t = (seed += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function rebuildModel(preserveStepRatio = false) {
+      const prevRatio =
+        state.dendrogram && state.dendrogram.steps.length > 1
+          ? state.currentStep / (state.dendrogram.steps.length - 1)
+          : 0.73;
+
+      state.activeMovies =
+        state.scope === "shared"
+          ? allMovies.filter((m) => m.rawRatings.length >= 2)
+          : [...allMovies];
+
+      state.dendrogram = buildFullDendrogram(state.activeMovies, state.linkage);
+
+      const maxStep = state.dendrogram.steps.length - 1;
+      if (preserveStepRatio) {
+        state.currentStep = Math.min(maxStep, Math.max(0, Math.round(prevRatio * maxStep)));
+      } else {
+        // Default cut to ~18 clusters for shared, ~35 for all
+        const targetClusters = state.scope === "shared" ? 18 : 35;
+        state.currentStep = Math.max(0, Math.min(maxStep, state.activeMovies.length - targetClusters));
+      }
+
+      // Initialize node positions around a deterministic circle ordered by dendrogram leaf order
+      const leafOrder = [];
+      function collectLeafOrder(nodeId) {
+        const node = state.dendrogram.treeNodes[nodeId];
+        if (node.isLeaf) {
+          leafOrder.push(node.movieIdx);
+        } else {
+          collectLeafOrder(node.left);
+          collectLeafOrder(node.right);
+        }
+      }
+      collectLeafOrder(state.dendrogram.rootNode.id);
+
+      const rankMap = new Map();
+      leafOrder.forEach((mIdx, rank) => rankMap.set(mIdx, rank));
+
+      const rng = mulberry32(42);
+      const n = state.activeMovies.length;
+      const baseRadius = state.scope === "shared" ? 230 : 340;
+
+      state.nodes = state.activeMovies.map((m, idx) => {
+        const rank = rankMap.get(idx) ?? idx;
+        const angle = (rank / n) * Math.PI * 2;
+        const jitter = (rng() - 0.5) * 45;
+        return {
+          movieIdx: idx,
+          x: Math.cos(angle) * (baseRadius + jitter),
+          y: Math.sin(angle) * (baseRadius + jitter),
+          vx: 0,
+          vy: 0,
+          radius: Math.min(18, 8 + m.rawRatings.length * 1.4),
+        };
+      });
+
+      // Reset selection if movie is not in active scope
+      if (
+        state.selectedMovie &&
+        !state.activeMovies.some((m) => m.movie === state.selectedMovie)
+      ) {
+        state.selectedMovie = null;
+      }
+
+      updateStepDerivedState();
+      resetCamera();
+    }
+
+    function updateStepDerivedState() {
+      const stepObj = state.dendrogram.steps[state.currentStep];
+      state.recResult = computeRecommendations(
+        state.selectedReviewer,
+        state.activeMovies,
+        allMovies,
+        userMeans,
+        stepObj.clusters
+      );
+      syncUIControls();
+      renderInspector();
+    }
+
+    /**
+     * ============================================================================
+     * 4. UI CONTROLS & DOM SYNC
+     * ============================================================================
+     */
+    const elCanvas = document.getElementById("cluster-canvas");
+    const ctx = elCanvas.getContext("2d");
+    const elWrapper = document.getElementById("canvas-wrapper");
+    const elTooltip = document.getElementById("canvas-tooltip");
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.remove("hidden");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.add("hidden"), 2400);
+    }
+
+    function initReviewerDropdown() {
+      const select = document.getElementById("select-reviewer");
+      const reviewers = Object.keys(userMeans).sort((a, b) => a.localeCompare(b, "pl"));
+      if (!reviewers.includes(state.selectedReviewer) && reviewers.length > 0) {
+        state.selectedReviewer = reviewers[0];
+      }
+      select.innerHTML = reviewers.map(
+        (person) =>
+          `<option value="${person}" ${person === state.selectedReviewer ? "selected" : ""}>${person}</option>`
+      ).join("");
+    }
+
+    function syncUIControls() {
+      const maxStep = state.dendrogram.steps.length - 1;
+      const stepObj = state.dendrogram.steps[state.currentStep];
+
+      // Header badge
+      document.getElementById("dataset-badge").textContent =
+        state.scope === "shared" ? "64 Shared Movies" : "189 All Movies";
+
+      // Scope buttons
+      const btnShared = document.getElementById("btn-scope-shared");
+      const btnAll = document.getElementById("btn-scope-all");
+      if (state.scope === "shared") {
+        btnShared.className = "py-2 px-2 text-xs font-medium rounded-lg bg-indigo-600 text-white transition text-center";
+        btnAll.className = "py-2 px-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition text-center";
+      } else {
+        btnAll.className = "py-2 px-2 text-xs font-medium rounded-lg bg-indigo-600 text-white transition text-center";
+        btnShared.className = "py-2 px-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition text-center";
+      }
+
+      // Slider & labels
+      const slider = document.getElementById("slider-step");
+      slider.max = maxStep;
+      slider.value = state.currentStep;
+
+      document.getElementById("label-step").textContent = `${state.currentStep} / ${maxStep}`;
+      document.getElementById("label-cluster-count").textContent = `${stepObj.clusters.length} clusters`;
+      document.getElementById("label-cut-dist").textContent = `cut dist: ${stepObj.distance.toFixed(3)}`;
+
+      // Merge event box
+      const mergeBox = document.getElementById("merge-event-box");
+      if (state.currentStep === 0) {
+        mergeBox.innerHTML = `
+          <div class="text-slate-300 font-medium">Initial State (Step 0)</div>
+          <p class="text-slate-400">Each of the <span class="text-white font-mono">${state.activeMovies.length}</span> movies starts in its own singleton cluster. Press <span class="text-indigo-400 font-semibold">Play</span> or <span class="text-indigo-400 font-semibold">Step Forward</span> to merge the closest pair.</p>
+        `;
+      } else {
+        const formatList = (arr) =>
+          arr.length <= 2
+            ? arr.map((t) => `<span class="text-white font-medium">${t}</span>`).join(", ")
+            : `<span class="text-white font-medium">${arr[0]}</span> + ${arr.length - 1} more`;
+
+        mergeBox.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-indigo-400 font-semibold">Step #${state.currentStep} Merge</span>
+            <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300">dist = ${stepObj.distance.toFixed(3)}</span>
+          </div>
+          <div class="text-slate-300 leading-relaxed">
+            Merged ${formatList(stepObj.mergedA)} <span class="text-slate-500">&harr;</span> ${formatList(stepObj.mergedB)}
+          </div>
+        `;
+      }
+
+      // Reviewer Stats
+      const { userMean, seenCount, recommendations, antiRecommendations } = state.recResult;
+      const totalCatalog = allMovies.length;
+      document.getElementById("reviewer-stats").innerHTML = `
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2">
+          <div class="text-[10px] text-slate-400">Avg Rating</div>
+          <div class="text-sm font-bold font-mono text-amber-400">${userMean.toFixed(2)}</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2">
+          <div class="text-[10px] text-slate-400">Rated</div>
+          <div class="text-sm font-bold font-mono text-white">${seenCount}</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2">
+          <div class="text-[10px] text-slate-400">Unseen</div>
+          <div class="text-sm font-bold font-mono text-cyan-400">${totalCatalog - seenCount}</div>
+        </div>
+      `;
+
+      // Render Top 5 Recommendations
+      const recContainer = document.getElementById("list-recommendations");
+      recContainer.innerHTML = recommendations
+        .map(
+          (item, i) => {
+            const mObj = allMovies.find((m) => m.movie === item.movie);
+            const metaSnippet = mObj && mObj.metadata
+              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.description}</p>`
+              : "";
+            const tmdbPill = mObj && mObj.metadata && mObj.metadata.tmdbRating
+              ? `<span class="text-[10px] font-mono text-amber-400">★ ${mObj.metadata.tmdbRating}</span>`
+              : "";
+
+            return `
+          <div data-movie="${item.movie.replace(/"/g, "&quot;")}" class="rec-card group cursor-pointer bg-slate-950/90 hover:bg-slate-800/90 border border-slate-800 hover:border-emerald-500/40 rounded-xl p-2.5 transition">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start gap-2 min-w-0">
+                <span class="text-xs font-mono font-bold text-emerald-400 mt-0.5">${i + 1}.</span>
+                <div class="min-w-0">
+                  <div class="text-xs font-semibold text-slate-100 truncate group-hover:text-emerald-300 transition">${item.movie}</div>
+                  <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                      item.source === "cluster"
+                        ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                        : "bg-slate-800 text-slate-400"
+                    }">${item.source}</span>
+                    ${tmdbPill}
+                  </div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-xs font-mono font-bold text-emerald-400">${item.predictedRating}/10</div>
+              </div>
+            </div>
+            ${metaSnippet}
+          </div>
+        `;
+          }
+        )
+        .join("");
+
+      // Render Top 5 Anti-Recommendations
+      const antiContainer = document.getElementById("list-antirecommendations");
+      antiContainer.innerHTML = antiRecommendations
+        .map(
+          (item, i) => {
+            const mObj = allMovies.find((m) => m.movie === item.movie);
+            const metaSnippet = mObj && mObj.metadata
+              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.description}</p>`
+              : "";
+            const tmdbPill = mObj && mObj.metadata && mObj.metadata.tmdbRating
+              ? `<span class="text-[10px] font-mono text-amber-400">★ ${mObj.metadata.tmdbRating}</span>`
+              : "";
+
+            return `
+          <div data-movie="${item.movie.replace(/"/g, "&quot;")}" class="rec-card group cursor-pointer bg-slate-950/90 hover:bg-slate-800/90 border border-slate-800 hover:border-rose-500/40 rounded-xl p-2.5 transition">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start gap-2 min-w-0">
+                <span class="text-xs font-mono font-bold text-rose-400 mt-0.5">${i + 1}.</span>
+                <div class="min-w-0">
+                  <div class="text-xs font-semibold text-slate-100 truncate group-hover:text-rose-300 transition">${item.movie}</div>
+                  <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                      item.source === "cluster"
+                        ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                        : "bg-slate-800 text-slate-400"
+                    }">${item.source}</span>
+                    ${tmdbPill}
+                  </div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-xs font-mono font-bold text-rose-400">${item.predictedRating}/10</div>
+              </div>
+            </div>
+            ${metaSnippet}
+          </div>
+        `;
+          }
+        )
+        .join("");
+
+      // Attach click handlers on recommendation cards to highlight on canvas & open detail card
+      document.querySelectorAll(".rec-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const title = card.getAttribute("data-movie");
+          focusMovieOnCanvas(title);
+          openMovieDetailModal(title);
+        });
+      });
+    }
+
+    function renderInspector() {
+      const container = document.getElementById("inspector-content");
+      const badge = document.getElementById("inspector-badge");
+      const targetTitle = state.selectedMovie || state.hoveredMovie;
+
+      if (!targetTitle) {
+        badge.textContent = "No selection";
+        container.innerHTML = `
+          <p class="text-slate-400 italic leading-relaxed">
+            Click any movie bubble or recommendation card to inspect plot descriptions, TMDb scores, and cluster members.
+          </p>
+        `;
+        return;
+      }
+
+      const movieObj = allMovies.find((m) => m.movie === targetTitle);
+      if (!movieObj) return;
+
+      const meta = movieObj.metadata;
+      const metaHeaderHtml = meta
+        ? `
+          <div class="flex items-center gap-2 flex-wrap text-[11px]">
+            ${meta.releaseYear ? `<span class="font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${meta.releaseYear}</span>` : ""}
+            ${meta.mediaType ? `<span class="uppercase font-mono px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${meta.mediaType}</span>` : ""}
+            ${meta.tmdbRating ? `<span class="font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">★ ${meta.tmdbRating}/10 TMDb</span>` : ""}
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed bg-slate-950/70 border border-slate-800/80 rounded-xl p-2.5">
+            ${meta.overview}
+          </p>
+        `
+        : `<div class="text-[11px] text-slate-500 italic">No description loaded yet. Click "TMDb / Load JSON" in the top bar to fetch synopses.</div>`;
+
+      // Find which cluster this movie currently belongs to
+      const activeIdx = state.activeMovies.findIndex((m) => m.movie === targetTitle);
+      let clusterInfoHtml = `<div class="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">Filtered out (only 1 rating). Switch scope to "All Titles" to cluster it.</div>`;
+
+      if (activeIdx !== -1 && state.recResult) {
+        const cMeta = state.recResult.clusterMeta.find((c) =>
+          c.items.some((it) => it.movie === targetTitle)
+        );
+        if (cMeta) {
+          const affStr =
+            cMeta.affinity === null
+              ? "Unseen by user (neutral)"
+              : `${cMeta.affinity >= 0 ? "+" : ""}${cMeta.affinity.toFixed(2)} (${
+                  cMeta.affinity >= 0 ? "Liked" : "Disliked"
+                })`;
+          const neighbors = cMeta.items
+            .map((it) => it.movie)
+            .filter((t) => t !== targetTitle);
+
+          clusterInfoHtml = `
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Cluster #${cMeta.clusterId + 1} (${cMeta.items.length} movies)</span>
+              </div>
+              <div class="text-[11px] font-mono ${
+                cMeta.affinity === null
+                  ? "text-sky-400"
+                  : cMeta.affinity >= 0
+                  ? "text-emerald-400"
+                  : "text-rose-400"
+              }">
+                User Affinity: ${affStr}
+              </div>
+              ${
+                neighbors.length > 0
+                  ? `<div class="text-[11px] text-slate-300 pt-1 border-t border-slate-800/80">
+                      <span class="text-slate-400">Co-clustered:</span> ${neighbors.join(", ")}
+                    </div>`
+                  : `<div class="text-[11px] text-slate-500 italic">Singleton cluster at current cut</div>`
+              }
+            </div>
+          `;
+        }
+      }
+
+      badge.textContent = `${movieObj.rawRatings.length} rating${movieObj.rawRatings.length > 1 ? "s" : ""}`;
+
+      const ratingsRows = [...movieObj.rawRatings]
+        .sort((a, b) => b.rating - a.rating)
+        .map((r) => {
+          const centered = r.rating - userMeans[r.person];
+          const isTargetUser = r.person === state.selectedReviewer;
+          return `
+            <div class="flex items-center justify-between py-1 px-2 rounded-lg ${
+              isTargetUser ? "bg-amber-500/15 border border-amber-500/30" : "bg-slate-950/60"
+            }">
+              <span class="truncate ${isTargetUser ? "text-amber-300 font-semibold" : "text-slate-300"}">${r.person}</span>
+              <span class="font-mono text-[11px] shrink-0 ml-2">
+                <strong class="text-white">${r.rating}</strong>
+                <span class="${centered >= 0 ? "text-emerald-400" : "text-rose-400"}">(${centered >= 0 ? "+" : ""}${centered.toFixed(1)})</span>
+              </span>
+            </div>
+          `;
+        })
+        .join("");
+
+      container.innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <div class="font-bold text-sm text-white leading-snug">${movieObj.movie}</div>
+          <button id="btn-inspector-fullcard" class="shrink-0 px-2 py-1 text-[10px] font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
+            Full Card
+          </button>
+        </div>
+        ${metaHeaderHtml}
+        ${clusterInfoHtml}
+        <div class="space-y-1 pt-1">
+          <div class="text-[11px] font-medium text-slate-400">Reviewer Scores (vs. User Mean):</div>
+          ${ratingsRows}
+        </div>
+      `;
+
+      const fullBtn = document.getElementById("btn-inspector-fullcard");
+      if (fullBtn) {
+        fullBtn.addEventListener("click", () => openMovieDetailModal(movieObj.movie));
+      }
+    }
+
+    function openMovieDetailModal(title) {
+      const movieObj = allMovies.find((m) => m.movie === title);
+      if (!movieObj) return;
+
+      const meta = movieObj.metadata;
+      const groupAvg =
+        movieObj.rawRatings.reduce((s, r) => s + r.rating, 0) / movieObj.rawRatings.length;
+
+      const activeIdx = state.activeMovies.findIndex((m) => m.movie === title);
+      let clusterLabel = "Single-Rater Title (Outside Shared Scope)";
+      let clusterMembers = [];
+      if (activeIdx !== -1 && state.recResult) {
+        const cMeta = state.recResult.clusterMeta.find((c) =>
+          c.items.some((it) => it.movie === title)
+        );
+        if (cMeta) {
+          clusterLabel = `Cluster #${cMeta.clusterId + 1} (${cMeta.items.length} titles)`;
+          clusterMembers = cMeta.items.map((it) => it.movie).filter((t) => t !== title);
+        }
+      }
+      document.getElementById("detail-modal-cluster-badge").textContent = clusterLabel;
+
+      const posterHtml =
+        meta && meta.posterUrl
+          ? `<img src="${meta.posterUrl}" alt="${movieObj.movie}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-xl border border-slate-700 shrink-0 shadow-lg" />
+             <div style="display:none" class="w-32 sm:w-40 h-48 sm:h-60 rounded-xl border border-slate-700 bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 p-3 flex-col justify-between shrink-0">
+               <span class="text-[10px] font-mono uppercase text-cyan-300">${meta.mediaType || "Title"}</span>
+               <div class="font-bold text-sm text-white leading-snug">${movieObj.movie}</div>
+               <span class="text-xs font-mono text-slate-400">${meta.releaseYear || ""}</span>
+             </div>`
+          : `<div class="w-32 sm:w-40 h-48 sm:h-60 rounded-xl border border-slate-700 bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 p-3.5 flex flex-col justify-between shrink-0 shadow-lg">
+               <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-950/70 text-cyan-300 w-fit">${
+                 meta && meta.mediaType ? meta.mediaType : "Catalog"
+               }</span>
+               <div class="font-bold text-sm text-white leading-snug">${movieObj.movie}</div>
+               <span class="text-xs font-mono text-slate-400">${
+                 meta && meta.releaseYear ? meta.releaseYear : "No poster"
+               }</span>
+             </div>`;
+
+      const ratingsGrid = [...movieObj.rawRatings]
+        .sort((a, b) => b.rating - a.rating)
+        .map((r) => {
+          const centered = r.rating - userMeans[r.person];
+          const isTarget = r.person === state.selectedReviewer;
+          return `
+            <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${
+              isTarget
+                ? "bg-amber-500/15 border-amber-500/40"
+                : "bg-slate-950/80 border-slate-800"
+            }">
+              <span class="text-xs ${isTarget ? "text-amber-200 font-semibold" : "text-slate-300"}">${r.person}</span>
+              <span class="font-mono text-xs">
+                <strong class="text-white">${r.rating}/10</strong>
+                <span class="${centered >= 0 ? "text-emerald-400" : "text-rose-400"}"> (${centered >= 0 ? "+" : ""}${centered.toFixed(1)})</span>
+              </span>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("detail-modal-body").innerHTML = `
+        <div class="flex flex-col sm:flex-row gap-4">
+          ${posterHtml}
+          <div class="flex-1 space-y-2.5">
+            <div>
+              <h3 class="text-lg font-bold text-white leading-tight">${
+                meta && meta.officialTitle ? meta.officialTitle : movieObj.movie
+              }</h3>
+              ${
+                meta && meta.originalTitle && meta.originalTitle !== meta.officialTitle
+                  ? `<div class="text-xs text-slate-400 mt-0.5">Original: ${meta.originalTitle}</div>`
+                  : ""
+              }
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              ${
+                meta && meta.releaseYear
+                  ? `<span class="text-xs font-mono px-2 py-0.5 rounded-lg bg-slate-800 text-slate-200">${meta.releaseYear}</span>`
+                  : ""
+              }
+              ${
+                meta && meta.mediaType
+                  ? `<span class="text-xs font-mono uppercase px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${meta.mediaType}</span>`
+                  : ""
+              }
+              <span class="text-xs font-mono px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                Group Avg: ${groupAvg.toFixed(2)}/10 (${movieObj.rawRatings.length} votes)
+              </span>
+              ${
+                meta && meta.tmdbRating
+                  ? `<span class="text-xs font-mono px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      ★ TMDb: ${meta.tmdbRating}/10 ${meta.tmdbVotes ? `(${meta.tmdbVotes.toLocaleString()} votes)` : ""}
+                    </span>`
+                  : ""
+              }
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              ${
+                meta && meta.overview
+                  ? meta.overview
+                  : "No plot synopsis available for this title yet. Click 'TMDb / Load JSON' in the header to enrich all 189 titles with TMDb descriptions and posters."
+              }
+            </p>
+          </div>
+        </div>
+
+        ${
+          clusterMembers.length > 0
+            ? `<div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs">
+                <div class="text-slate-400 font-medium mb-1">Co-Clustered Neighbors at Current Cut:</div>
+                <div class="text-slate-200 leading-relaxed">${clusterMembers.join(" • ")}</div>
+              </div>`
+            : ""
+        }
+
+        <div class="space-y-2">
+          <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Group Ratings Breakdown</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${ratingsGrid}
+          </div>
+        </div>
+      `;
+
+      document.getElementById("movie-detail-modal").classList.remove("hidden");
+    }
+
+
+
+    function focusMovieOnCanvas(title) {
+      state.selectedMovie = title;
+      renderInspector();
+
+      const idx = state.activeMovies.findIndex((m) => m.movie === title);
+      if (idx === -1) {
+        showToast(`"${title}" has 1 rating — switch to "All Titles" to see it on canvas.`);
+        return;
+      }
+
+      const node = state.nodes[idx];
+      const rect = elWrapper.getBoundingClientRect();
+      state.camera.zoom = 1.45;
+      state.camera.x = rect.width / 2 - node.x * state.camera.zoom;
+      state.camera.y = rect.height / 2 - node.y * state.camera.zoom;
+    }
+
+    /**
+     * ============================================================================
+     * 5. HTML5 CANVAS RENDERING (INTERACTIVE BUBBLE CLUSTER VIEW)
+     * ============================================================================
+     */
+    function resizeCanvas() {
+      const rect = elWrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      elCanvas.width = rect.width * dpr;
+      elCanvas.height = rect.height * dpr;
+      elCanvas.style.width = `${rect.width}px`;
+      elCanvas.style.height = `${rect.height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function resetCamera() {
+      const rect = elWrapper.getBoundingClientRect();
+      state.camera.x = rect.width / 2;
+      state.camera.y = rect.height / 2;
+      state.camera.zoom = state.scope === "shared" ? 0.95 : 0.72;
+    }
+
+    // Physics step for Bubble Cluster View: attracts nodes within the same active cluster, repels across clusters
+    function stepBubblePhysics() {
+      const stepObj = state.dendrogram.steps[state.currentStep];
+      const clusters = stepObj.clusters;
+      const nodes = state.nodes;
+      const n = nodes.length;
+      if (n === 0) return;
+
+      // Map each movieIdx -> clusterId
+      const clusterOfNode = new Int32Array(n);
+      clusters.forEach((leafIndices, cId) => {
+        for (const mIdx of leafIndices) {
+          clusterOfNode[mIdx] = cId;
+        }
+      });
+
+      // Compute cluster centroids
+      const centroids = clusters.map((leafIndices) => {
+        let sx = 0, sy = 0;
+        for (const mIdx of leafIndices) {
+          sx += nodes[mIdx].x;
+          sy += nodes[mIdx].y;
+        }
+        return {
+          x: sx / leafIndices.length,
+          y: sy / leafIndices.length,
+        };
+      });
+
+      // Apply forces
+      for (let i = 0; i < n; i++) {
+        const ni = nodes[i];
+        const ci = clusterOfNode[i];
+        const cent = centroids[ci];
+
+        // Pull gently toward world origin + own cluster centroid
+        ni.vx += -ni.x * 0.0018;
+        ni.vy += -ni.y * 0.0018;
+
+        ni.vx += (cent.x - ni.x) * 0.045;
+        ni.vy += (cent.y - ni.y) * 0.045;
+      }
+
+      // Pairwise repulsion (stronger between different clusters so cluster hulls separate cleanly)
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const ni = nodes[i];
+          const nj = nodes[j];
+          const sameCluster = clusterOfNode[i] === clusterOfNode[j];
+
+          let dx = nj.x - ni.x;
+          let dy = nj.y - ni.y;
+          let distSq = dx * dx + dy * dy;
+          if (distSq < 1) {
+            dx = (Math.random() - 0.5) * 2;
+            dy = (Math.random() - 0.5) * 2;
+            distSq = dx * dx + dy * dy;
+          }
+
+          const dist = Math.sqrt(distSq);
+          const minSep = sameCluster
+            ? ni.radius + nj.radius + 14
+            : ni.radius + nj.radius + 54;
+
+          if (dist < minSep) {
+            const force = ((minSep - dist) / dist) * (sameCluster ? 0.14 : 0.085);
+            const fx = dx * force;
+            const fy = dy * force;
+            ni.vx -= fx;
+            ni.vy -= fy;
+            nj.vx += fx;
+            nj.vy += fy;
+          }
+        }
+      }
+
+      // Integrate velocity with damping
+      for (let i = 0; i < n; i++) {
+        const ni = nodes[i];
+        ni.vx *= 0.78;
+        ni.vy *= 0.78;
+        ni.x += ni.vx;
+        ni.y += ni.vy;
+      }
+
+      // Compute bounding circles (hulls) for each cluster
+      state.clusterHulls = clusters.map((leafIndices, cId) => {
+        let sx = 0, sy = 0;
+        for (const mIdx of leafIndices) {
+          sx += nodes[mIdx].x;
+          sy += nodes[mIdx].y;
+        }
+        const cx = sx / leafIndices.length;
+        const cy = sy / leafIndices.length;
+
+        let maxR = 24;
+        for (const mIdx of leafIndices) {
+          const nd = nodes[mIdx];
+          const d = Math.hypot(nd.x - cx, nd.y - cy) + nd.radius + 10;
+          if (d > maxR) maxR = d;
+        }
+
+        const cMeta = state.recResult.clusterMeta[cId];
+        return {
+          clusterId: cId,
+          x: cx,
+          y: cy,
+          radius: maxR,
+          affinity: cMeta ? cMeta.affinity : null,
+          leafIndices,
+        };
+      });
+    }
+
+    function getClusterColors(affinity) {
+      if (affinity === null) {
+        return {
+          fill: "rgba(14, 165, 233, 0.08)",
+          stroke: "rgba(56, 189, 248, 0.35)",
+          nodeFill: "#0284c7",
+        };
+      }
+      if (affinity >= 0) {
+        return {
+          fill: "rgba(16, 185, 129, 0.12)",
+          stroke: "rgba(52, 211, 153, 0.55)",
+          nodeFill: "#059669",
+        };
+      }
+      return {
+        fill: "rgba(244, 63, 94, 0.12)",
+        stroke: "rgba(251, 113, 133, 0.55)",
+        nodeFill: "#e11d48",
+      };
+    }
+
+    function renderBubbleView(width, height) {
+      stepBubblePhysics();
+
+      ctx.save();
+      ctx.translate(state.camera.x, state.camera.y);
+      ctx.scale(state.camera.zoom, state.camera.zoom);
+
+      // Subtle radial grid rings in background
+      ctx.strokeStyle = "rgba(30, 41, 59, 0.65)";
+      ctx.lineWidth = 1 / state.camera.zoom;
+      for (const r of [140, 280, 420]) {
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      const query = state.searchQuery.trim().toLowerCase();
+
+      // 1. Draw Cluster Hulls (for clusters with >= 2 movies, or subtle ring for singletons)
+      for (const hull of state.clusterHulls) {
+        const colors = getClusterColors(hull.affinity);
+        ctx.beginPath();
+        ctx.arc(hull.x, hull.y, hull.radius, 0, Math.PI * 2);
+        ctx.fillStyle = colors.fill;
+        ctx.fill();
+
+        if (hull.leafIndices.length > 1) {
+          ctx.strokeStyle = colors.stroke;
+          ctx.lineWidth = 1.5 / state.camera.zoom;
+          ctx.setLineDash([5 / state.camera.zoom, 4 / state.camera.zoom]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Draw intra-cluster links
+          ctx.strokeStyle = colors.stroke;
+          ctx.lineWidth = 0.8 / state.camera.zoom;
+          for (let i = 0; i < hull.leafIndices.length; i++) {
+            for (let j = i + 1; j < hull.leafIndices.length; j++) {
+              const a = state.nodes[hull.leafIndices[i]];
+              const b = state.nodes[hull.leafIndices[j]];
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // 2. Draw Movie Nodes
+      for (const hull of state.clusterHulls) {
+        const colors = getClusterColors(hull.affinity);
+
+        for (const mIdx of hull.leafIndices) {
+          const movieObj = state.activeMovies[mIdx];
+          const node = state.nodes[mIdx];
+          const isRatedByUser = state.selectedReviewer in movieObj.vector;
+          const isSelected = state.selectedMovie === movieObj.movie;
+          const isHovered = state.hoveredMovie === movieObj.movie;
+          const matchesSearch = query.length > 0 && movieObj.movie.toLowerCase().includes(query);
+          const dimmed = query.length > 0 && !matchesSearch;
+
+          ctx.save();
+          if (dimmed) ctx.globalAlpha = 0.2;
+
+          // Glow if selected, hovered, or search match
+          if (isSelected || isHovered || matchesSearch) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.radius + 6, 0, Math.PI * 2);
+            ctx.fillStyle = matchesSearch
+              ? "rgba(250, 204, 21, 0.35)"
+              : "rgba(99, 102, 241, 0.38)";
+            ctx.fill();
+          }
+
+          // Main circle
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = isSelected ? "#6366f1" : colors.nodeFill;
+          ctx.fill();
+
+          // Border: Gold ring if rated by target reviewer
+          if (isSelected || matchesSearch) {
+            ctx.strokeStyle = "#facc15";
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+          } else if (isRatedByUser) {
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          } else {
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          }
+
+          // Label rendering (adaptive to zoom & dataset size)
+          const showLabel =
+            state.scope === "shared" ||
+            state.camera.zoom > 0.95 ||
+            isSelected ||
+            isHovered ||
+            matchesSearch ||
+            hull.leafIndices.length > 1;
+
+          if (showLabel) {
+            const fontSize = Math.max(9.5, Math.min(12.5, 11 / Math.pow(state.camera.zoom, 0.25)));
+            ctx.font = `${isSelected || matchesSearch ? "600" : "500"} ${fontSize}px Inter, sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+
+            const label =
+              movieObj.movie.length > 22 && !isHovered && !isSelected
+                ? movieObj.movie.slice(0, 20) + "…"
+                : movieObj.movie;
+
+            // Text shadow/pill for legibility
+            ctx.fillStyle = "rgba(2, 6, 23, 0.78)";
+            const textW = ctx.measureText(label).width;
+            ctx.fillRect(node.x - textW / 2 - 3, node.y + node.radius + 3, textW + 6, fontSize + 3);
+
+            ctx.fillStyle = isSelected || matchesSearch ? "#fef08a" : "#e2e8f0";
+            ctx.fillText(label, node.x, node.y + node.radius + 4);
+          }
+
+          ctx.restore();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function animationLoop() {
+      const rect = elWrapper.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      renderBubbleView(rect.width, rect.height);
+      requestAnimationFrame(animationLoop);
+    }
+
+    /**
+     * ============================================================================
+     * 6. POINTER INTERACTIONS (PAN, ZOOM, HOVER TOOLTIPS, CLICK SELECTION)
+     * ============================================================================
+     */
+    function screenToWorld(clientX, clientY) {
+      const rect = elCanvas.getBoundingClientRect();
+      const sx = clientX - rect.left;
+      const sy = clientY - rect.top;
+      return {
+        x: (sx - state.camera.x) / state.camera.zoom,
+        y: (sy - state.camera.y) / state.camera.zoom,
+      };
+    }
+
+    function findMovieAtPoint(clientX, clientY) {
+      const world = screenToWorld(clientX, clientY);
+
+      for (let i = state.nodes.length - 1; i >= 0; i--) {
+        const nd = state.nodes[i];
+        const dist = Math.hypot(world.x - nd.x, world.y - nd.y);
+        if (dist <= nd.radius + 5) {
+          return state.activeMovies[nd.movieIdx];
+        }
+      }
+      return null;
+    }
+
+    function updateTooltip(movieObj, clientX, clientY) {
+      if (!movieObj) {
+        elTooltip.classList.add("hidden");
+        return;
+      }
+
+      const userRatingObj = movieObj.rawRatings.find(
+        (r) => r.person === state.selectedReviewer
+      );
+      const userLine = userRatingObj
+        ? `<div class="text-amber-300 font-semibold mt-1">${state.selectedReviewer}: ${userRatingObj.rating}/10</div>`
+        : `<div class="text-slate-400 italic mt-1">Not yet rated by ${state.selectedReviewer}</div>`;
+
+      const meta = movieObj.metadata;
+      const metaBadges = meta
+        ? `<div class="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
+             ${meta.releaseYear ? `<span class="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">${meta.releaseYear}</span>` : ""}
+             ${meta.tmdbRating ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300">★ ${meta.tmdbRating}/10</span>` : ""}
+           </div>`
+        : "";
+      const overviewLine =
+        meta && meta.overview
+          ? `<p class="text-[11px] text-slate-300 mt-1.5 line-clamp-3 leading-snug">${meta.overview}</p>`
+          : "";
+
+      const otherRatings = movieObj.rawRatings
+        .map((r) => `${r.person.split(" ")[0]} (${r.rating})`)
+        .join(", ");
+
+      elTooltip.innerHTML = `
+        <div class="font-bold text-white text-xs">${movieObj.movie}</div>
+        ${metaBadges}
+        ${userLine}
+        ${overviewLine}
+        <div class="text-[10px] text-slate-400 mt-1.5 pt-1 border-t border-slate-800">
+          ${otherRatings}
+        </div>
+      `;
+
+      elTooltip.style.left = `${Math.min(window.innerWidth - 280, clientX + 14)}px`;
+      elTooltip.style.top = `${Math.min(window.innerHeight - 180, clientY + 14)}px`;
+      elTooltip.classList.remove("hidden");
+    }
+
+    // Mouse Events
+    let pointerDownPos = { x: 0, y: 0 };
+
+    elCanvas.addEventListener("mousedown", (e) => {
+      state.isDragging = true;
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+      state.dragStart = {
+        x: e.clientX - state.camera.x,
+        y: e.clientY - state.camera.y,
+      };
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (state.isDragging) {
+        state.camera.x = e.clientX - state.dragStart.x;
+        state.camera.y = e.clientY - state.dragStart.y;
+        elTooltip.classList.add("hidden");
+        return;
+      }
+
+      const rect = elCanvas.getBoundingClientRect();
+      if (
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom
+      ) {
+        const hit = findMovieAtPoint(e.clientX, e.clientY);
+        const newHover = hit ? hit.movie : null;
+        if (state.hoveredMovie !== newHover) {
+          state.hoveredMovie = newHover;
+          elCanvas.style.cursor = hit ? "pointer" : "grab";
+          if (!state.selectedMovie) renderInspector();
+        }
+        updateTooltip(hit, e.clientX, e.clientY);
+      } else {
+        elTooltip.classList.add("hidden");
+      }
+    });
+
+    window.addEventListener("mouseup", (e) => {
+      if (!state.isDragging) return;
+      state.isDragging = false;
+      const moveDist = Math.hypot(
+        e.clientX - pointerDownPos.x,
+        e.clientY - pointerDownPos.y
+      );
+      if (moveDist < 5) {
+        const hit = findMovieAtPoint(e.clientX, e.clientY);
+        state.selectedMovie = hit ? hit.movie : null;
+        renderInspector();
+        if (hit) openMovieDetailModal(hit.movie);
+      }
+    });
+
+    // Wheel Zoom
+    elCanvas.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        const rect = elCanvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+        const newZoom = Math.max(0.3, Math.min(4.0, state.camera.zoom * zoomFactor));
+
+        state.camera.x = mouseX - ((mouseX - state.camera.x) / state.camera.zoom) * newZoom;
+        state.camera.y = mouseY - ((mouseY - state.camera.y) / state.camera.zoom) * newZoom;
+        state.camera.zoom = newZoom;
+      },
+      { passive: false }
+    );
+
+    // Touch Events (Pan, Pinch-Zoom, Tap)
+    elCanvas.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          state.isDragging = true;
+          pointerDownPos = { x: t.clientX, y: t.clientY };
+          state.dragStart = {
+            x: t.clientX - state.camera.x,
+            y: t.clientY - state.camera.y,
+          };
+        } else if (e.touches.length === 2) {
+          state.isDragging = false;
+          state.lastTouchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        }
+      },
+      { passive: false }
+    );
+
+    elCanvas.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && state.isDragging) {
+          const t = e.touches[0];
+          state.camera.x = t.clientX - state.dragStart.x;
+          state.camera.y = t.clientY - state.dragStart.y;
+        } else if (e.touches.length === 2 && state.lastTouchDist) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const factor = dist / state.lastTouchDist;
+          state.camera.zoom = Math.max(0.3, Math.min(4.0, state.camera.zoom * factor));
+          state.lastTouchDist = dist;
+        }
+      },
+      { passive: false }
+    );
+
+    elCanvas.addEventListener("touchend", (e) => {
+      if (e.changedTouches.length === 1 && state.isDragging) {
+        const t = e.changedTouches[0];
+        const moveDist = Math.hypot(
+          t.clientX - pointerDownPos.x,
+          t.clientY - pointerDownPos.y
+        );
+        if (moveDist < 8) {
+          const hit = findMovieAtPoint(t.clientX, t.clientY);
+          state.selectedMovie = hit ? hit.movie : null;
+          renderInspector();
+          if (hit) openMovieDetailModal(hit.movie);
+        }
+      }
+      state.isDragging = false;
+      state.lastTouchDist = null;
+    });
+
+    /**
+     * ============================================================================
+     * 7. PLAYBACK & EVENT LISTENERS
+     * ============================================================================
+     */
+    function stopPlayback() {
+      state.isPlaying = false;
+      clearInterval(state.playTimer);
+      document.getElementById("icon-play").classList.remove("hidden");
+      document.getElementById("icon-pause").classList.add("hidden");
+    }
+
+    function startPlayback() {
+      const maxStep = state.dendrogram.steps.length - 1;
+      if (state.currentStep >= maxStep) {
+        state.currentStep = 0;
+        updateStepDerivedState();
+      }
+      state.isPlaying = true;
+      document.getElementById("icon-play").classList.add("hidden");
+      document.getElementById("icon-pause").classList.remove("hidden");
+
+      clearInterval(state.playTimer);
+      state.playTimer = setInterval(() => {
+        if (state.currentStep < maxStep) {
+          state.currentStep++;
+          updateStepDerivedState();
+        } else {
+          stopPlayback();
+        }
+      }, state.playSpeed);
+    }
+
+
+    // Scope buttons
+    document.getElementById("btn-scope-shared").addEventListener("click", () => {
+      if (state.scope === "shared") return;
+      stopPlayback();
+      state.scope = "shared";
+      document.getElementById("scope-hint").textContent =
+        "Filtering to ≥2 ratings removes 125 single-rater movies so clusters reflect group consensus.";
+      rebuildModel(false);
+    });
+
+    document.getElementById("btn-scope-all").addEventListener("click", () => {
+      if (state.scope === "all") return;
+      stopPlayback();
+      state.scope = "all";
+      document.getElementById("scope-hint").textContent =
+        "Showing all 189 titles. Notice how single-rater movies clump by individual reviewer.";
+      rebuildModel(false);
+    });
+
+    // Linkage selector
+    document.getElementById("select-linkage").addEventListener("change", (e) => {
+      stopPlayback();
+      state.linkage = e.target.value;
+      rebuildModel(true);
+    });
+
+    // Merge Step Slider
+    document.getElementById("slider-step").addEventListener("input", (e) => {
+      stopPlayback();
+      state.currentStep = Number(e.target.value);
+      updateStepDerivedState();
+    });
+
+    // Playback buttons
+    document.getElementById("btn-reset").addEventListener("click", () => {
+      stopPlayback();
+      state.currentStep = 0;
+      updateStepDerivedState();
+    });
+
+    document.getElementById("btn-prev").addEventListener("click", () => {
+      stopPlayback();
+      if (state.currentStep > 0) {
+        state.currentStep--;
+        updateStepDerivedState();
+      }
+    });
+
+    document.getElementById("btn-next").addEventListener("click", () => {
+      stopPlayback();
+      const maxStep = state.dendrogram.steps.length - 1;
+      if (state.currentStep < maxStep) {
+        state.currentStep++;
+        updateStepDerivedState();
+      }
+    });
+
+    document.getElementById("btn-play").addEventListener("click", () => {
+      if (state.isPlaying) {
+        stopPlayback();
+      } else {
+        startPlayback();
+      }
+    });
+
+    document.getElementById("select-speed").addEventListener("change", (e) => {
+      state.playSpeed = Number(e.target.value);
+      if (state.isPlaying) {
+        startPlayback();
+      }
+    });
+
+    // Reviewer selector
+    document.getElementById("select-reviewer").addEventListener("change", (e) => {
+      state.selectedReviewer = e.target.value;
+      updateStepDerivedState();
+    });
+
+    // Search input
+    document.getElementById("input-search").addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+    });
+
+    // Fit view
+    document.getElementById("btn-reset-zoom").addEventListener("click", () => {
+      resetCamera();
+    });
+
+    // JSON Modal
+    function refreshJsonModalContent() {
+      const textarea = document.getElementById("json-textarea");
+      if (state.jsonTab === "normalized") {
+        const enrichedPayload = allMovies.map((m) => ({
+          movie: m.movie,
+          ratings: m.rawRatings,
+          metadata: m.metadata,
+        }));
+        textarea.value = JSON.stringify(enrichedPayload, null, 2);
+      } else {
+        const exportPayload = {
+          reviewer: state.selectedReviewer,
+          scope: state.scope,
+          linkage: state.linkage,
+          mergeStep: state.currentStep,
+          cutDistance: Number(state.dendrogram.steps[state.currentStep].distance.toFixed(4)),
+          clusterCount: state.recResult.clusterMeta.length,
+          recommendations: state.recResult.recommendations,
+          antiRecommendations: state.recResult.antiRecommendations,
+          clusters: state.recResult.clusterMeta.map((c) => ({
+            clusterId: c.clusterId + 1,
+            affinity: c.affinity !== null ? Number(c.affinity.toFixed(3)) : null,
+            movies: c.items.map((m) => m.movie),
+          })),
+        };
+        textarea.value = JSON.stringify(exportPayload, null, 2);
+      }
+    }
+
+    document.getElementById("btn-open-json").addEventListener("click", () => {
+      refreshJsonModalContent();
+      document.getElementById("json-modal").classList.remove("hidden");
+    });
+
+    document.getElementById("btn-close-json").addEventListener("click", () => {
+      document.getElementById("json-modal").classList.add("hidden");
+    });
+
+    document.getElementById("btn-download-json").addEventListener("click", () => {
+      refreshJsonModalContent();
+      const blob = new Blob([document.getElementById("json-textarea").value], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        state.jsonTab === "normalized"
+          ? "enriched_movie_ratings.json"
+          : "movie_clusters_recommendations.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("JSON file downloaded!");
+    });
+
+    // Movie Detail Modal close handlers
+    document.getElementById("btn-close-detail-modal").addEventListener("click", () => {
+      document.getElementById("movie-detail-modal").classList.add("hidden");
+    });
+    document.getElementById("movie-detail-modal").addEventListener("click", (e) => {
+      if (e.target.id === "movie-detail-modal") {
+        document.getElementById("movie-detail-modal").classList.add("hidden");
+      }
+    });
+
+    // TMDb Metadata Modal & Browser-Side Fetcher
+    document.getElementById("btn-open-tmdb").addEventListener("click", () => {
+      document.getElementById("tmdb-modal").classList.remove("hidden");
+    });
+    document.getElementById("btn-close-tmdb").addEventListener("click", () => {
+      document.getElementById("tmdb-modal").classList.add("hidden");
+    });
+
+    // Upload enriched_movie_ratings.json
+    document.getElementById("input-upload-json").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!Array.isArray(parsed) || !parsed[0]?.movie || !Array.isArray(parsed[0]?.ratings)) {
+            throw new Error("Invalid JSON schema.");
+          }
+          const stats = computeUserStatsAndVectors(parsed);
+          allMovies = stats.allMovies;
+          userMeans = stats.userMeans;
+          userCounts = stats.userCounts;
+          rebuildModel(true);
+          document.getElementById("tmdb-modal").classList.add("hidden");
+          showToast(`Loaded ${parsed.length} movies with metadata!`);
+        } catch (err) {
+          showToast(`Error loading JSON: ${err.message}`);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Live Browser TMDb Enrichment
+    function sanitizeTitleForSearch(title) {
+      return title
+        .replace(/\(trylogia\)/i, "")
+        .replace(/\(części I-VI\)/i, "")
+        .replace(/– Ostatni rozdział/i, "")
+        .replace(/Film pt\.\s*/i, "")
+        .trim();
+    }
+
+    async function searchTmdbBrowser(query, language, token) {
+      const url = new URL("https://api.themoviedb.org/3/search/multi");
+      url.searchParams.set("query", query);
+      url.searchParams.set("include_adult", "false");
+      url.searchParams.set("language", language);
+
+      const res = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          accept: "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return (data.results || []).find(
+        (item) => item.media_type === "movie" || item.media_type === "tv"
+      );
+    }
+
+    document.getElementById("btn-run-tmdb-fetch").addEventListener("click", async () => {
+      const token = document.getElementById("input-tmdb-token").value.trim();
+      if (!token) {
+        showToast("Please paste your TMDb API Read Access Token first.");
+        return;
+      }
+
+      const btn = document.getElementById("btn-run-tmdb-fetch");
+      const progressWrap = document.getElementById("tmdb-progress-wrap");
+      const progressLabel = document.getElementById("tmdb-progress-label");
+      const progressPct = document.getElementById("tmdb-progress-pct");
+      const progressBar = document.getElementById("tmdb-progress-bar");
+
+      btn.disabled = true;
+      btn.classList.add("opacity-60");
+      progressWrap.classList.remove("hidden");
+
+      let enrichedCount = 0;
+      for (let i = 0; i < allMovies.length; i++) {
+        const m = allMovies[i];
+        const pct = Math.round(((i + 1) / allMovies.length) * 100);
+        progressLabel.textContent = `Fetching ${i + 1}/${allMovies.length}: ${m.movie}`;
+        progressPct.textContent = `${pct}%`;
+        progressBar.style.width = `${pct}%`;
+
+        try {
+          const cleanQuery = sanitizeTitleForSearch(m.movie);
+          let match = await searchTmdbBrowser(cleanQuery, "pl-PL", token);
+          if (!match || !match.overview) {
+            const enMatch = await searchTmdbBrowser(cleanQuery, "en-US", token);
+            if (enMatch) {
+              match = match
+                ? { ...match, overview: match.overview || enMatch.overview }
+                : enMatch;
+            }
+          }
+
+          if (match) {
+            const releaseDate = match.release_date || match.first_air_date || null;
+            m.metadata = {
+              tmdbId: match.id,
+              mediaType: match.media_type,
+              officialTitle: match.title || match.name,
+              originalTitle: match.original_title || match.original_name,
+              releaseYear: releaseDate ? Number(releaseDate.slice(0, 4)) : null,
+              overview: match.overview || "No description available.",
+              tmdbRating: Number((match.vote_average || 0).toFixed(1)),
+              tmdbVotes: match.vote_count || 0,
+              posterUrl: match.poster_path
+                ? `https://image.tmdb.org/t/p/w342${match.poster_path}`
+                : null,
+            };
+            enrichedCount++;
+          }
+        } catch (err) {
+          if (err.message.includes("401")) {
+            showToast("Invalid TMDb Bearer Token (HTTP 401).");
+            break;
+          }
+        }
+
+        await new Promise((r) => setTimeout(r, 40));
+      }
+
+      // Sync updated metadata into activeMovies and UI
+      for (const am of state.activeMovies) {
+        const full = allMovies.find((x) => x.movie === am.movie);
+        if (full) am.metadata = full.metadata;
+      }
+
+      btn.disabled = false;
+      btn.classList.remove("opacity-60");
+      updateStepDerivedState();
+      showToast(`Enriched ${enrichedCount} titles from TMDb! You can download the JSON under "JSON / Export".`);
+    });
+
+    document.getElementById("btn-close-json").addEventListener("click", () => {
+      document.getElementById("json-modal").classList.add("hidden");
+    });
+
+    document.getElementById("btn-json-tab-clusters").addEventListener("click", () => {
+      state.jsonTab = "clusters";
+      document.getElementById("btn-json-tab-clusters").className =
+        "px-2.5 py-1 rounded-md bg-indigo-600 text-white font-medium";
+      document.getElementById("btn-json-tab-normalized").className =
+        "px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-medium";
+      refreshJsonModalContent();
+    });
+
+    document.getElementById("btn-json-tab-normalized").addEventListener("click", () => {
+      state.jsonTab = "normalized";
+      document.getElementById("btn-json-tab-normalized").className =
+        "px-2.5 py-1 rounded-md bg-indigo-600 text-white font-medium";
+      document.getElementById("btn-json-tab-clusters").className =
+        "px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-medium";
+      refreshJsonModalContent();
+    });
+
+    document.getElementById("btn-copy-json").addEventListener("click", () => {
+      const textarea = document.getElementById("json-textarea");
+      textarea.select();
+      document.execCommand("copy");
+      showToast("JSON copied to clipboard!");
+    });
+
+    // Window resize
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+    });
+
+    // Boot Application asynchronously
+    async function bootApplication() {
+      try {
+        const loadedData = await loadDefaultDataset(['./enriched_movie_ratings.json', './normalized_movie_ratings.json']);
+        if (loadedData && Array.isArray(loadedData) && loadedData.length > 0) {
+          const hydrated = loadedData.map((item) => ({
+            ...item,
+            metadata: item.metadata || (BUILTIN_METADATA[item.movie]
+              ? { tmdbId: null, posterUrl: null, ...BUILTIN_METADATA[item.movie] }
+              : null),
+          }));
+          const stats = computeUserStatsAndVectors(hydrated);
+          allMovies = stats.allMovies;
+          userMeans = stats.userMeans;
+          userCounts = stats.userCounts;
+        } else {
+          console.warn("Could not auto-fetch dataset; using fallback dataset.");
+          const stats = computeUserStatsAndVectors(FALLBACK_DATASET);
+          allMovies = stats.allMovies;
+          userMeans = stats.userMeans;
+          userCounts = stats.userCounts;
+        }
+      } catch (err) {
+        console.error("Error during dataset loading:", err);
+        const stats = computeUserStatsAndVectors(FALLBACK_DATASET);
+        allMovies = stats.allMovies;
+        userMeans = stats.userMeans;
+        userCounts = stats.userCounts;
+      }
+
+      initReviewerDropdown();
+      resizeCanvas();
+      rebuildModel(false);
+      requestAnimationFrame(animationLoop);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootApplication);
+    } else {
+      bootApplication();
+    }
+  </script>
+</body>
+</html>

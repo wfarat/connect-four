@@ -1,0 +1,2183 @@
+[
+  {
+    "movie": "1670",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 7
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "2001: Odyseja kosmiczna",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "28 Years Later",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "8. Mila",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Akira",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "American Psycho",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Avatar",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 7
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 7
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 6
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Avatar: Endgame",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Avengers: Czas Ultrona",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 2
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 5
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Backrooms",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 8
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 6
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 7
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Barbarzyńcy",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Barbie",
+    "ratings": [
+      {
+        "person": "Piotr Trybała",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Battleship: Bitwa o Ziemię",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 1
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Battlestar Galactica",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 8
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Blade Runner 2049",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Braveheart – Waleczne Serce",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Breaking Bad",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 10
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 10
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Bruce Wszechmogący",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Buddy",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Carrie",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Chłopaki nie płaczą",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Chłopaki z baraków",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Ciacho",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Cicha noc",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Cinema Paradiso",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Citizen Vigilante",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Co robimy w ukryciu",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Con Air – lot skazańców",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Contratiempo",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Coyote vs. Acme",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Cyberpunk: Edgerunners",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Cyberpunk: Edgerunners 2",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Człowiek z blizną",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Dark",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Dawno temu w Ameryce",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Diabeł ubiera się u Prady",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Diuna",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 5
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Diuna: Część druga",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Dom z papieru",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 6
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Drive",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Drzewo życia",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Duchy Inisherin",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Dwunastu gniewnych ludzi",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 6
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Dwóch i pół",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Dystrykt 9",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Dziennik Bridget Jones",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Dzień świra",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 7
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 8
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Dzień świstaka",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "El Camino: Film Breaking Bad",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Ex Machina",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 8
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "movie": "Film pt. Solówka",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Forrest Gump",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 4
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Fringe: Na granicy światów",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Full Metal Jacket",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Futurama",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Ghost in the Shell",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 7
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Gladiator",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Gladiator II",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "movie": "Gran Torino",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Grand Budapest Hotel",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Gwiezdne wojny",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Gwiezdne wojny (części I-VI)",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Gwiezdne wojny: Część IV – Nowa nadzieja",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Harakiri",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Hero",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Ice Cream Man",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Incepcja",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 9
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 1
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Interstellar",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 9
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 3
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Iron Man",
+    "ratings": [
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Jak sprzedawać dragi w sieci (szybko)",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Jedna bitwa po drugiej",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Jobs",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "John Wick",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 7
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 6
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 7
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Joker",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Kac Vegas",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 1
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Kapitan Ameryka: Wojna bohaterów",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 3
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Kapitan Phillips",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Kiler",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Kill Bill",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Kobieta z wydm",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Kraina lodu",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 5
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 7
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Krwawa uczta",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Krzyk",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Kung Fu Panda",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "La Cara Oculta",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Lake Mungo",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Leon zawodowiec",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Lighthouse",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Lista Schindlera",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Listy do M.",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 7
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 2
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 7
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Listy do M. 2",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 2
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Lot nad kukułczym gniazdem",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Lucyfer",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 3
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Mad Max",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Marsjanin",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Martwe zło",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Martwe zło 2",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Mechanik: Prawo zemsty",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Mgła",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Miasteczko South Park",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Miasteczko Twin Peaks",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Midsommar. W biały dzień",
+    "ratings": [
+      {
+        "person": "Piotr Trybała",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Mroczny Rycerz",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Narcos",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Narcos: Meksyk",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Narodziny gwiazdy",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 2
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Naruto",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Neon Genesis Evangelion",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Niebieskooki samuraj",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Niepamięć",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Obcy kontra Predator 2",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "movie": "Obcy – decydujące starcie",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Obcy: Przebudzenie",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Obcy: Romulus",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "movie": "Obcy: Ósmy pasażer Nostromo",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 8
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Obecność",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 3
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Odyseja",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Ojciec chrzestny",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Okręt",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Ona",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "One Piece",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "One Piece Film: Red",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Oppenheimer",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Pan życia i śmierci",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Para idealna",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Paranormal Activity",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 2
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Peaky Blinders",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 9
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Pianista",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Piraci z Karaibów",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Piraci z Karaibów: Na krańcu świata",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Pitbull. Nowe porządki",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Piła",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Piła IV",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 2
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Planeta Singli",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Platforma",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Podziemny krąg",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Polityka",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Polowanie na Czerwony Październik",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Problem trzech ciał",
+    "ratings": [
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Project Hail Mary",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 10
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Pulp Fiction",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 8
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Rain Man",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Rambo: Pierwsza krew",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 5
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Resident Evil",
+    "ratings": [
+      {
+        "person": "Piotr Trybała",
+        "rating": 5
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Resident Evil (2026)",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 2
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Resident Evil: Apokalipsa – Ostatni rozdział",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Rick and Morty",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 5
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 7
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 3
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 8
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Rocky",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Rojst",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Rozdzielenie",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 9
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Samce alfa",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Sensacje XX wieku",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 8
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Shrek",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 9
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Shrek Forever",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "movie": "Siedmiu samurajów",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Skazani na Shawshank",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 8
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 10
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Spider-Man: Bez drogi do domu",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Stowarzyszenie Umarłych Poetów",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Stranger Things",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "Straszny film 4",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Teoria wielkiego podrywu",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Terminal",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Terminator 2: Dzień sądu",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "The Bear",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "The Expanse",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 7
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "The Office",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 1
+      },
+      {
+        "person": "Piotr Trybała",
+        "rating": 10
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "The Room",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 2
+      }
+    ]
+  },
+  {
+    "movie": "The Venture Bros.",
+    "ratings": [
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Titanic",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "movie": "To przychodzi po zmroku",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Transporter",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Ucieczka w kosmos",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Uśpieni",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "W garniturach",
+    "ratings": [
+      {
+        "person": "Szymon Czudowski",
+        "rating": 7
+      }
+    ]
+  },
+  {
+    "movie": "Weapons",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 6
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Whiplash",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 10
+      },
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      },
+      {
+        "person": "Damian Sowa",
+        "rating": 10
+      },
+      {
+        "person": "Jakub Strzałkowski",
+        "rating": 9
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 8
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 9
+      },
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Wilk z Wall Street",
+    "ratings": [
+      {
+        "person": "Cezary Bobkowski",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Wstrząsy",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 3
+      }
+    ]
+  },
+  {
+    "movie": "Wyjazd integracyjny",
+    "ratings": [
+      {
+        "person": "Paweł Czapiewski",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Władca Pierścieni (trylogia)",
+    "ratings": [
+      {
+        "person": "Radosław Krawiec",
+        "rating": 10
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Wściekłe psy",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 6
+      }
+    ]
+  },
+  {
+    "movie": "Z Archiwum X",
+    "ratings": [
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 8
+      }
+    ]
+  },
+  {
+    "movie": "Zadzwoń do Saula",
+    "ratings": [
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Zielona mila",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Zmierzch",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 1
+      },
+      {
+        "person": "Radosław Krawiec",
+        "rating": 1
+      },
+      {
+        "person": "Szymon Czudowski",
+        "rating": 2
+      },
+      {
+        "person": "Grzegorz Piórek",
+        "rating": 1
+      }
+    ]
+  },
+  {
+    "movie": "Łowca androidów",
+    "ratings": [
+      {
+        "person": "Władysław Farat",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Świat według Kiepskich",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 10
+      }
+    ]
+  },
+  {
+    "movie": "Żołnierze kosmosu",
+    "ratings": [
+      {
+        "person": "Damian Sowa",
+        "rating": 7
+      },
+      {
+        "person": "Sławomir Rudnicki",
+        "rating": 9
+      }
+    ]
+  },
+  {
+    "movie": "Żywe trupy",
+    "ratings": [
+      {
+        "person": "Oskar Niedźwiedzki",
+        "rating": 4
+      }
+    ]
+  }
+]
