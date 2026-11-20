@@ -54,17 +54,26 @@ Traditional centroid-based algorithms (such as $K$-Means) fail under these condi
 
 To eliminate individual rating biases (strict vs. generous reviewers), we calculate each reviewer $u$'s mean rating across all movies they evaluated $I_u$:
 
-$$\mu_u = \frac{1}{|I_u|} \sum_{i \in I_u} R_{i, u}$$
+$$
+\mu_u = \frac{1}{|I_u|} \sum_{i \in I_u} R_{i, u}
+$$
 
 Where $R_{i, u} \in [1, 10]$ is the raw rating given by reviewer $u$ to movie $i$.
 
 Each movie is converted into a mean-centered sparse vector $v_i$:
 
-$$v_{i, u} = \begin{cases} R_{i, u} - \mu_u & \text{if } R_{i, u} \ne \mu_u \\ 0.01 & \text{if } R_{i, u} = \mu_u \text{ (to distinguish from unrated)} \end{cases}$$
+$$
+v_{i, u} = \begin{cases}
+R_{i, u} - \mu_u & \text{if } R_{i, u} \ne \mu_u \\
+0.01 & \text{if } R_{i, u} = \mu_u \text{ (to distinguish from unrated)}
+\end{cases}
+$$
 
 Additionally, we compute the movie's **peer sentiment** $\bar{s}_i$ (the average centered sentiment of all reviewers who rated it):
 
-$$\bar{s}_i = \frac{1}{|U_i|} \sum_{u \in U_i} (R_{i, u} - \mu_u)$$
+$$
+\bar{s}_i = \frac{1}{|U_i|} \sum_{u \in U_i} (R_{i, u} - \mu_u)
+$$
 
 Where $U_i$ is the set of reviewers who rated movie $i$.
 
@@ -76,15 +85,21 @@ Given two movies $i$ and $j$, let $U_{i, j} = U_i \cap U_j$ denote the set of re
 
 If $|U_{i, j}| = 0$ or the norms are 0, the distance defaults to maximum dissimilarity:
 
-$$d(i, j) = 2.0$$
+$$
+d(i, j) = 2.0
+$$
 
 Otherwise, adjusted cosine similarity is calculated over overlapping reviewers:
 
-$$\text{sim}(i, j) = \frac{\sum_{u \in U_{i, j}} v_{i, u} \cdot v_{j, u}}{\sqrt{\sum_{u \in U_{i, j}} v_{i, u}^2} \cdot \sqrt{\sum_{u \in U_{i, j}} v_{j, u}^2}}$$
+$$
+\text{sim}(i, j) = \frac{\sum_{u \in U_{i, j}} v_{i, u} \cdot v_{j, u}}{\sqrt{\sum_{u \in U_{i, j}} v_{i, u}^2} \cdot \sqrt{\sum_{u \in U_{i, j}} v_{j, u}^2}}
+$$
 
 The pairwise dissimilarity distance is defined in range $[0, 2]$:
 
-$$d(i, j) = 1 - \text{sim}(i, j)$$
+$$
+d(i, j) = 1 - \text{sim}(i, j)
+$$
 
 - $d = 0$: Perfect alignment in reviewer sentiment.
 - $d = 1$: Orthogonal / uncorrelated opinions.
@@ -105,17 +120,29 @@ $$d(i, j) = 1 - \text{sim}(i, j)$$
 
 The engine supports three linkage metrics:
 
-- **Average Linkage (Default / UPGMA):**
-  $$D_{\text{avg}}(C_A, C_B) = \frac{1}{|C_A| \cdot |C_B|} \sum_{i \in C_A} \sum_{j \in C_B} d(i, j)$$
-  *Balanced, robust against outliers, and yields natural movie genre/taste groupings.*
+**Average Linkage (Default / UPGMA):**
 
-- **Single Linkage (Minimum Distance):**
-  $$D_{\text{single}}(C_A, C_B) = \min_{i \in C_A, j \in C_B} d(i, j)$$
-  *Useful for chaining closely related series or franchises.*
+$$
+D_{\text{avg}}(C_A, C_B) = \frac{1}{|C_A| \cdot |C_B|} \sum_{i \in C_A} \sum_{j \in C_B} d(i, j)
+$$
 
-- **Complete Linkage (Maximum Distance):**
-  $$D_{\text{complete}}(C_A, C_B) = \max_{i \in C_A, j \in C_B} d(i, j)$$
-  *Enforces compact, tightly coupled cliques.*
+*Balanced, robust against outliers, and yields natural movie genre/taste groupings.*
+
+**Single Linkage (Minimum Distance):**
+
+$$
+D_{\text{single}}(C_A, C_B) = \min_{i \in C_A, j \in C_B} d(i, j)
+$$
+
+*Useful for chaining closely related series or franchises.*
+
+**Complete Linkage (Maximum Distance):**
+
+$$
+D_{\text{complete}}(C_A, C_B) = \max_{i \in C_A, j \in C_B} d(i, j)
+$$
+
+*Enforces compact, tightly coupled cliques.*
 
 ---
 
@@ -123,21 +150,36 @@ The engine supports three linkage metrics:
 
 For a designated reviewer $u$:
 
-1. **Cluster Affinity:** For each cluster $C$, compute reviewer $u$'s mean centered rating across movies in $C$ they have already seen:
-   $$\text{Affinity}(u, C) = \frac{1}{|C \cap I_u|} \sum_{i \in C \cap I_u} v_{i, u}$$
+**1. Cluster Affinity:** For each cluster $C$, compute reviewer $u$'s mean centered rating across movies in $C$ they have already seen:
 
-2. **Cluster-level Candidate Scoring:** For every unseen movie $j \in C \setminus I_u$:
-   $$\text{Score}(u, j) = \begin{cases} \text{Affinity}(u, C) + 0.35 \cdot \bar{s}_j & \text{if } \text{Affinity}(u, C) \ge 0 \\ \text{Affinity}(u, C) - 0.35 \cdot |\bar{s}_j| & \text{if } \text{Affinity}(u, C) < 0 \end{cases}$$
+$$
+\text{Affinity}(u, C) = \frac{1}{|C \cap I_u|} \sum_{i \in C \cap I_u} v_{i, u}
+$$
 
-3. **Collaborative Peer-Similarity Fallback:** For movies not covered by cluster affinity, compute reviewer-to-reviewer taste similarity $\text{Sim}(u, w)$:
-   $$\text{FallbackScore}(u, j) = \frac{\sum_{w \in U_j, |\text{Sim}(u, w)| > 0.05} \text{Sim}(u, w) \cdot v_{j, w}}{\sum |\text{Sim}(u, w)|}$$
+**2. Cluster-Level Candidate Scoring:** For every unseen movie $j \in C \setminus I_u$:
 
-4. **Predicted Rating:**
-   $$\hat{R}_{u, j} = \text{clamp}_{[1, 10]}\left(\mu_u + \text{Score}(u, j)\right)$$
+$$
+\text{Score}(u, j) = \begin{cases}
+\text{Affinity}(u, C) + 0.35 \cdot \bar{s}_j & \text{if } \text{Affinity}(u, C) \ge 0 \\
+\text{Affinity}(u, C) - 0.35 \cdot |\bar{s}_j| & \text{if } \text{Affinity}(u, C) < 0
+\end{cases}
+$$
 
-5. **Output:**
-   - **Top-5 Recommendations:** The 5 unseen movies with the highest positive predicted scores.
-   - **Top-5 Anti-Recommendations:** The 5 unseen movies with the strongest negative predicted scores (worst titles first).
+**3. Collaborative Peer-Similarity Fallback:** For movies not covered by cluster affinity, compute reviewer-to-reviewer taste similarity $\text{Sim}(u, w)$:
+
+$$
+\text{FallbackScore}(u, j) = \frac{\sum_{w \in U_j, |\text{Sim}(u, w)| > 0.05} \text{Sim}(u, w) \cdot v_{j, w}}{\sum_{w \in U_j, |\text{Sim}(u, w)| > 0.05} |\text{Sim}(u, w)|}
+$$
+
+**4. Predicted Rating:** Compute the final predicted rating clamped to the $[1, 10]$ scale:
+
+$$
+\hat{R}_{u, j} = \text{clamp}_{[1, 10]}\left(\mu_u + \text{Score}(u, j)\right)
+$$
+
+**5. Output:**
+- **Top-5 Recommendations:** The 5 unseen movies with the highest positive predicted scores.
+- **Top-5 Anti-Recommendations:** The 5 unseen movies with the strongest negative predicted scores (worst titles first).
 
 ---
 
