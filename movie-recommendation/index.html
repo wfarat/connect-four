@@ -435,6 +435,7 @@
       computeRecommendations,
       getRecommendations,
       loadDefaultDataset,
+      DEFAULT_ENRICHED_DATASET,
     } from './index.js';
 
     // Expose engine to global window for browser console inspection
@@ -449,6 +450,7 @@
       computeRecommendations,
       getRecommendations,
       loadDefaultDataset,
+      DEFAULT_ENRICHED_DATASET,
     };
 
     // Built-in metadata dictionary so descriptions, years, media types & community scores work out-of-the-box
@@ -520,14 +522,9 @@
     };
 
     /**
-     * Fallback minimal seed dataset if offline or opened via file:// protocol
+     * Default enriched dataset containing all 189 titles with posters, descriptions, and ratings.
      */
-    const FALLBACK_DATASET = [
-      { movie: "1670", ratings: [{ person: "Paweł Czapiewski", rating: 9 }, { person: "Radosław Krawiec", rating: 7 }, { person: "Piotr Trybała", rating: 8 }] },
-      { movie: "2001: Odyseja kosmiczna", ratings: [{ person: "Oskar Niedźwiedzki", rating: 2 }] },
-      { movie: "Żołnierze kosmosu", ratings: [{ person: "Damian Sowa", rating: 7 }, { person: "Sławomir Rudnicki", rating: 9 }] },
-      { movie: "Żywe trupy", ratings: [{ person: "Oskar Niedźwiedzki", rating: 4 }] },
-    ];
+    const FALLBACK_DATASET = DEFAULT_ENRICHED_DATASET;
 
     /**
      * ============================================================================
@@ -764,11 +761,12 @@
         .map(
           (item, i) => {
             const mObj = allMovies.find((m) => m.movie === item.movie);
-            const metaSnippet = mObj && mObj.metadata
-              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.description}</p>`
+            const metaSnippet = mObj && mObj.metadata && (mObj.metadata.overview || mObj.metadata.description)
+              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.overview || mObj.metadata.description}</p>`
               : "";
-            const tmdbPill = mObj && mObj.metadata && mObj.metadata.tmdbRating
-              ? `<span class="text-[10px] font-mono text-amber-400">★ ${mObj.metadata.tmdbRating}</span>`
+            const ratingVal = mObj && mObj.metadata && (mObj.metadata.tmdbRating ?? mObj.metadata.publicRating);
+            const tmdbPill = ratingVal
+              ? `<span class="text-[10px] font-mono text-amber-400">★ ${ratingVal}</span>`
               : "";
 
             return `
@@ -805,11 +803,12 @@
         .map(
           (item, i) => {
             const mObj = allMovies.find((m) => m.movie === item.movie);
-            const metaSnippet = mObj && mObj.metadata
-              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.description}</p>`
+            const metaSnippet = mObj && mObj.metadata && (mObj.metadata.overview || mObj.metadata.description)
+              ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${mObj.metadata.overview || mObj.metadata.description}</p>`
               : "";
-            const tmdbPill = mObj && mObj.metadata && mObj.metadata.tmdbRating
-              ? `<span class="text-[10px] font-mono text-amber-400">★ ${mObj.metadata.tmdbRating}</span>`
+            const ratingVal = mObj && mObj.metadata && (mObj.metadata.tmdbRating ?? mObj.metadata.publicRating);
+            const tmdbPill = ratingVal
+              ? `<span class="text-[10px] font-mono text-amber-400">★ ${ratingVal}</span>`
               : "";
 
             return `
@@ -869,18 +868,20 @@
       if (!movieObj) return;
 
       const meta = movieObj.metadata;
+      const metaOverview = meta && (meta.overview || meta.description);
+      const metaRating = meta && (meta.tmdbRating ?? meta.publicRating);
       const metaHeaderHtml = meta
         ? `
           <div class="flex items-center gap-2 flex-wrap text-[11px]">
             ${meta.releaseYear ? `<span class="font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${meta.releaseYear}</span>` : ""}
             ${meta.mediaType ? `<span class="uppercase font-mono px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${meta.mediaType}</span>` : ""}
-            ${meta.tmdbRating ? `<span class="font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">★ ${meta.tmdbRating}/10 TMDb</span>` : ""}
+            ${metaRating ? `<span class="font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">★ ${metaRating}/10 TMDb</span>` : ""}
           </div>
           <p class="text-[11px] text-slate-300 leading-relaxed bg-slate-950/70 border border-slate-800/80 rounded-xl p-2.5">
-            ${meta.overview}
+            ${metaOverview || "No description available."}
           </p>
         `
-        : `<div class="text-[11px] text-slate-500 italic">No description loaded yet. Click "TMDb / Load JSON" in the top bar to fetch synopses.</div>`;
+        : `<div class="text-[11px] text-slate-500 italic">No description available.</div>`;
 
       // Find which cluster this movie currently belongs to
       const activeIdx = state.activeMovies.findIndex((m) => m.movie === targetTitle);
@@ -1060,9 +1061,9 @@
                 Group Avg: ${groupAvg.toFixed(2)}/10 (${movieObj.rawRatings.length} votes)
               </span>
               ${
-                meta && meta.tmdbRating
+                meta && (meta.tmdbRating ?? meta.publicRating)
                   ? `<span class="text-xs font-mono px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                      ★ TMDb: ${meta.tmdbRating}/10 ${meta.tmdbVotes ? `(${meta.tmdbVotes.toLocaleString()} votes)` : ""}
+                      ★ TMDb: ${meta.tmdbRating ?? meta.publicRating}/10 ${(meta.tmdbVotes ?? meta.voteCount) ? `(${(meta.tmdbVotes ?? meta.voteCount).toLocaleString()} votes)` : ""}
                     </span>`
                   : ""
               }
@@ -1070,9 +1071,9 @@
 
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
               ${
-                meta && meta.overview
-                  ? meta.overview
-                  : "No plot synopsis available for this title yet. Click 'TMDb / Load JSON' in the header to enrich all 189 titles with TMDb descriptions and posters."
+                meta && (meta.overview || meta.description)
+                  ? (meta.overview || meta.description)
+                  : "No plot synopsis available for this title."
               }
             </p>
           </div>
@@ -1456,16 +1457,17 @@
         : `<div class="text-slate-400 italic mt-1">Not yet rated by ${state.selectedReviewer}</div>`;
 
       const meta = movieObj.metadata;
+      const metaRating = meta && (meta.tmdbRating ?? meta.publicRating);
+      const metaOverview = meta && (meta.overview || meta.description);
       const metaBadges = meta
         ? `<div class="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
              ${meta.releaseYear ? `<span class="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">${meta.releaseYear}</span>` : ""}
-             ${meta.tmdbRating ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300">★ ${meta.tmdbRating}/10</span>` : ""}
+             ${metaRating ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300">★ ${metaRating}/10</span>` : ""}
            </div>`
         : "";
-      const overviewLine =
-        meta && meta.overview
-          ? `<p class="text-[11px] text-slate-300 mt-1.5 line-clamp-3 leading-snug">${meta.overview}</p>`
-          : "";
+      const overviewLine = metaOverview
+        ? `<p class="text-[11px] text-slate-300 mt-1.5 line-clamp-3 leading-snug">${metaOverview}</p>`
+        : "";
 
       const otherRatings = movieObj.rawRatings
         .map((r) => `${r.person.split(" ")[0]} (${r.rating})`)
@@ -1829,11 +1831,7 @@
           if (!Array.isArray(parsed) || !parsed[0]?.movie || !Array.isArray(parsed[0]?.ratings)) {
             throw new Error("Invalid JSON schema.");
           }
-          const stats = computeUserStatsAndVectors(parsed);
-          allMovies = stats.allMovies;
-          userMeans = stats.userMeans;
-          userCounts = stats.userCounts;
-          rebuildModel(true);
+          applyDataset(parsed, true);
           document.getElementById("tmdb-modal").classList.add("hidden");
           showToast(`Loaded ${parsed.length} movies with metadata!`);
         } catch (err) {
@@ -1982,40 +1980,62 @@
       resizeCanvas();
     });
 
-    // Boot Application asynchronously
-    async function bootApplication() {
-      try {
-        const loadedData = await loadDefaultDataset(['./enriched_movie_ratings.json', './normalized_movie_ratings.json']);
-        if (loadedData && Array.isArray(loadedData) && loadedData.length > 0) {
-          const hydrated = loadedData.map((item) => ({
-            ...item,
-            metadata: item.metadata || (BUILTIN_METADATA[item.movie]
-              ? { tmdbId: null, posterUrl: null, ...BUILTIN_METADATA[item.movie] }
-              : null),
-          }));
-          const stats = computeUserStatsAndVectors(hydrated);
-          allMovies = stats.allMovies;
-          userMeans = stats.userMeans;
-          userCounts = stats.userCounts;
-        } else {
-          console.warn("Could not auto-fetch dataset; using fallback dataset.");
-          const stats = computeUserStatsAndVectors(FALLBACK_DATASET);
-          allMovies = stats.allMovies;
-          userMeans = stats.userMeans;
-          userCounts = stats.userCounts;
-        }
-      } catch (err) {
-        console.error("Error during dataset loading:", err);
-        const stats = computeUserStatsAndVectors(FALLBACK_DATASET);
-        allMovies = stats.allMovies;
-        userMeans = stats.userMeans;
-        userCounts = stats.userCounts;
-      }
+    // Helper to normalize metadata for any dataset item
+    function hydrateDataset(dataset) {
+      if (!Array.isArray(dataset)) return [];
+      return dataset.map((item) => {
+        const meta = item.metadata || (BUILTIN_METADATA[item.movie]
+          ? { tmdbId: null, posterUrl: null, ...BUILTIN_METADATA[item.movie] }
+          : null);
+        if (!meta) return { ...item, metadata: null };
+        const desc = meta.overview || meta.description || "";
+        const rating = meta.tmdbRating ?? meta.publicRating ?? null;
+        const votes = meta.tmdbVotes ?? meta.voteCount ?? null;
+        const year = meta.releaseYear ? (isNaN(Number(meta.releaseYear)) ? meta.releaseYear : Number(meta.releaseYear)) : null;
+        return {
+          ...item,
+          metadata: {
+            ...meta,
+            officialTitle: meta.officialTitle || item.movie,
+            originalTitle: meta.originalTitle || item.movie,
+            overview: desc,
+            description: desc,
+            tmdbRating: rating,
+            publicRating: rating,
+            tmdbVotes: votes,
+            voteCount: votes,
+            releaseYear: year,
+          },
+        };
+      });
+    }
 
+    function applyDataset(dataset, forceRecalculate = false) {
+      const hydrated = hydrateDataset(dataset);
+      const stats = computeUserStatsAndVectors(hydrated);
+      allMovies = stats.allMovies;
+      userMeans = stats.userMeans;
+      userCounts = stats.userCounts;
       initReviewerDropdown();
       resizeCanvas();
-      rebuildModel(false);
+      rebuildModel(forceRecalculate);
+    }
+
+    // Boot Application immediately & asynchronously sync external file
+    async function bootApplication() {
+      // 1. Immediately initialize with the pre-bundled enriched dataset (instant 0 ms load)
+      applyDataset(DEFAULT_ENRICHED_DATASET || FALLBACK_DATASET, false);
       requestAnimationFrame(animationLoop);
+
+      // 2. In background, check if external enriched_movie_ratings.json has updates on server
+      try {
+        const loadedData = await loadDefaultDataset(['./enriched_movie_ratings.json']);
+        if (loadedData && Array.isArray(loadedData) && loadedData.length > 0) {
+          applyDataset(loadedData, false);
+        }
+      } catch (_) {
+        // Pre-bundled dataset is already running and active
+      }
     }
 
     if (document.readyState === "loading") {
