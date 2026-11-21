@@ -482,9 +482,12 @@ export async function loadDefaultDataset(paths = ['./enriched_movie_ratings.json
     return null;
 }
 
+export { DEFAULT_ENRICHED_DATASET } from './enriched_movie_ratings.js';
+
 // --- CLI Example Usage (only executes when run directly in Node, e.g. `node index.js`) ---
 if (typeof process !== 'undefined' && process.argv && process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('index.js')) {
-    import('./normalized_movie_ratings.json', { with: { type: 'json' } })
+    import('./enriched_movie_ratings.json', { with: { type: 'json' } })
+        .catch(() => import('./normalized_movie_ratings.json', { with: { type: 'json' } }))
         .then((module) => {
             const movieData = module.default;
             const result = getRecommendations("Paweł Czapiewski", movieData);
