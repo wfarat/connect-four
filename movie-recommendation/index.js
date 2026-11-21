@@ -74,14 +74,15 @@ export function preprocessDataset(dataset) {
 export const computeUserStatsAndVectors = preprocessDataset;
 
 /**
- * Calculates the Adjusted Cosine Distance between two sparse rating vectors.
- * Computed exclusively over overlapping reviewers.
+ * Calculates the Adjusted Cosine Distance between two sparse rating vectors
+ * with Significance Weighting (shrinkage) to penalize low-overlap pairs.
  *
  * @param {Object<string, number>} vecA - Mean-centered sparse rating vector for movie A.
  * @param {Object<string, number>} vecB - Mean-centered sparse rating vector for movie B.
+ * @param {number} [minOverlap=3] - Minimum shared reviewers required for full similarity confidence.
  * @returns {number} Cosine distance in range [0, 2] (0 = identical taste, 1 = orthogonal, 2 = opposite).
  */
-export function cosineDistance(vecA, vecB) {
+export function cosineDistance(vecA, vecB, minOverlap = 3) {
     let dotProduct = 0;
     let normA = 0;
     let normB = 0;
@@ -98,8 +99,13 @@ export function cosineDistance(vecA, vecB) {
 
     if (overlap === 0 || normA === 0 || normB === 0) return 2.0;
 
-    const similarity = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-    return 1 - similarity;
+    const rawSimilarity = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+
+    // Significance weighting (shrinkage): shrink toward 0 when overlap < minOverlap
+    const shrinkageFactor = Math.min(overlap, minOverlap) / minOverlap;
+    const weightedSimilarity = rawSimilarity * shrinkageFactor;
+
+    return 1 - weightedSimilarity;
 }
 
 /**
@@ -489,9 +495,28 @@ if (typeof process !== 'undefined' && process.argv && process.argv[1] && process
     import('./enriched_movie_ratings.json', { with: { type: 'json' } })
         .catch(() => import('./normalized_movie_ratings.json', { with: { type: 'json' } }))
         .then((module) => {
-            const movieData = module.default;
-            const result = getRecommendations("Paweł Czapiewski", movieData);
-            console.log(result);
+            const { allMovies, userMeans } = preprocessDataset(module.default);
+            const sharedMovies = allMovies.filter((m) => m.rawRatings.length >= 2);
+            const { treeNodes, steps } = buildFullDendrogram(sharedMovies, "average");
+
+            const cutStep = [...steps].reverse().find(
+                (s) => s.clusters.length >= 15 && s.distance <= 0.75
+            ) || steps[0];
+
+            const result = computeRecommendations(
+                "Paweł Czapiewski",
+                sharedMovies,
+                allMovies,
+                userMeans,
+                cutStep.clusters
+            );
+
+            console.log({
+                person: result.person,
+                userAverageRating: result.userAverageRating,
+                recommendations: result.recommendations,
+                antiRecommendations: result.antiRecommendations,
+            });
         })
         .catch((err) => {
             console.error("Error running CLI example:", err);
